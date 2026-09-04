@@ -7,8 +7,13 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessPosition {
+    // These represent the actual indices, not user-friendly values.
+    private int row;
+    private int column;
 
     public ChessPosition(int row, int col) {
+        this.row = row - 1;
+        this.column = col - 1;
     }
 
     /**
@@ -16,7 +21,15 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        throw new RuntimeException("Not implemented");
+        return this.row + 1;
+    }
+
+    /**
+     * @return which array row index this position is in
+     * 0 codes for the bottom row
+     */
+    public int getRowIndex() {
+        return this.row;
     }
 
     /**
@@ -24,6 +37,14 @@ public class ChessPosition {
      * 1 codes for the left column
      */
     public int getColumn() {
-        throw new RuntimeException("Not implemented");
+        return this.column + 1;
+    }
+
+    /**
+     * @return the array column index this position is in
+     * 0 codes for the left column
+     */
+    public int getColumnIndex() {
+        return this.column;
     }
 }

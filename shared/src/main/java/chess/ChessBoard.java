@@ -23,7 +23,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        board[position.getRowIndex][position.getColumnIndex] = piece;
     }
 
     /**
@@ -34,9 +34,23 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return board[position.getRowIndex][position.getColumnIndex];
     }
 
+    /**
+     * Removes a piece from the chessboard
+     * 
+     * @param position Where to remove the piece from
+     */
+    public void removePiece(ChessPosition position) {
+        board[position.getRowIndex][position.getColumnIndex] = null;
+    }
+
+    /**
+     * Resets the back row of a color to RNBQKBNR
+     * 
+     * @param color The color/team you are resetting the back row for
+     */
     private void resetBackRow(TeamColor color) {
         int rank;
         if (color == WHITE) {
@@ -55,6 +69,11 @@ public class ChessBoard {
         board[rank][7] = new ChessPiece(color, ROOK);
     }
 
+    /**
+     * Resets the front row (pawns) of a color
+     * 
+     * @param color The color you are resetting the pawns for
+     */
     private void resetFrontRow(TeamColor color) {
         int rank;
         if (color == WHITE) {
@@ -76,8 +95,15 @@ public class ChessBoard {
         resetBackRow(WHITE);
         resetBackRow(BLACK);
 
-        //Set the front rows for white and black
+        // Set the front rows for white and black
         resetFrontRow(WHITE);
         resetFrontRow(BLACK);
+
+        // Set all other rows to empty squares
+        for (int i = 2; i < 6; i++) {
+            for (int j = 0; j < 8; j++) {
+                board[i][j] = null;
+            }
+        }
     }
 }
