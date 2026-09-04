@@ -1,5 +1,7 @@
 package chess;
 
+import chess.ChessPiece;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -7,9 +9,11 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    var board;
 
     public ChessBoard() {
-        
+        board = new ChessPiece[8][8]; // Create an empty 2D array (8x8) to represent the board itself
+        resetBoard();
     }
 
     /**
@@ -33,11 +37,47 @@ public class ChessBoard {
         throw new RuntimeException("Not implemented");
     }
 
+    private void resetBackRow(TeamColor color) {
+        int rank;
+        if (color == WHITE) {
+            rank = 0;
+        } else {
+            rank = 7;
+        }
+
+        board[rank][0] = new ChessPiece(color, ROOK);
+        board[rank][1] = new ChessPiece(color, KNIGHT);
+        board[rank][2] = new ChessPiece(color, BISHOP);
+        board[rank][3] = new ChessPiece(color, QUEEN);
+        board[rank][4] = new ChessPiece(color, KING);
+        board[rank][5] = new ChessPiece(color, BISHOP);
+        board[rank][6] = new ChessPiece(color, KNIGHT);
+        board[rank][7] = new ChessPiece(color, ROOK);
+    }
+
+    private void resetFrontRow(TeamColor color) {
+        int rank;
+        if (color == WHITE) {
+            rank = 1;
+        } else {
+            rank = 6;
+        }
+        for (int i = 0; i < 8; i++) {
+            board[rank][i] = new ChessPiece(color, PAWN);
+        }
+    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        // Set the back rows for white and black
+        resetBackRow(WHITE);
+        resetBackRow(BLACK);
+
+        //Set the front rows for white and black
+        resetFrontRow(WHITE);
+        resetFrontRow(BLACK);
     }
 }
