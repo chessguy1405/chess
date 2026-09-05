@@ -1,9 +1,5 @@
 package chess;
 
-import chess.ChessPiece;
-import chess.ChessPosition;
-import chess.ChessGame;
-
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -54,22 +50,22 @@ public class ChessBoard {
      * 
      * @param color The color/team you are resetting the back row for
      */
-    private void resetBackRow(TeamColor color) {
+    private void resetBackRow(ChessGame.TeamColor color) {
         int rank;
-        if (color == WHITE) {
+        if (color == ChessGame.TeamColor.WHITE) {
             rank = 0;
         } else {
             rank = 7;
         }
 
-        board[rank][0] = new ChessPiece(color, ROOK);
-        board[rank][1] = new ChessPiece(color, KNIGHT);
-        board[rank][2] = new ChessPiece(color, BISHOP);
-        board[rank][3] = new ChessPiece(color, QUEEN);
-        board[rank][4] = new ChessPiece(color, KING);
-        board[rank][5] = new ChessPiece(color, BISHOP);
-        board[rank][6] = new ChessPiece(color, KNIGHT);
-        board[rank][7] = new ChessPiece(color, ROOK);
+        board[rank][0] = new ChessPiece(color, ChessPiece.PieceType.ROOK);
+        board[rank][1] = new ChessPiece(color, ChessPiece.PieceType.KNIGHT);
+        board[rank][2] = new ChessPiece(color, ChessPiece.PieceType.BISHOP);
+        board[rank][3] = new ChessPiece(color, ChessPiece.PieceType.QUEEN);
+        board[rank][4] = new ChessPiece(color, ChessPiece.PieceType.KING);
+        board[rank][5] = new ChessPiece(color, ChessPiece.PieceType.BISHOP);
+        board[rank][6] = new ChessPiece(color, ChessPiece.PieceType.KNIGHT);
+        board[rank][7] = new ChessPiece(color, ChessPiece.PieceType.ROOK);
     }
 
     /**
@@ -77,15 +73,15 @@ public class ChessBoard {
      * 
      * @param color The color you are resetting the pawns for
      */
-    private void resetFrontRow(TeamColor color) {
+    private void resetFrontRow(ChessGame.TeamColor color) {
         int rank;
-        if (color == WHITE) {
+        if (color == ChessGame.TeamColor.WHITE) {
             rank = 1;
         } else {
             rank = 6;
         }
         for (int i = 0; i < 8; i++) {
-            board[rank][i] = new ChessPiece(color, PAWN);
+            board[rank][i] = new ChessPiece(color, ChessPiece.PieceType.PAWN);
         }
     }
 
@@ -95,12 +91,12 @@ public class ChessBoard {
      */
     public void resetBoard() {
         // Set the back rows for white and black
-        resetBackRow(WHITE);
-        resetBackRow(BLACK);
+        resetBackRow(ChessGame.TeamColor.WHITE);
+        resetBackRow(ChessGame.TeamColor.BLACK);
 
         // Set the front rows for white and black
-        resetFrontRow(WHITE);
-        resetFrontRow(BLACK);
+        resetFrontRow(ChessGame.TeamColor.WHITE);
+        resetFrontRow(ChessGame.TeamColor.BLACK);
 
         // Set all other rows to empty squares
         for (int i = 2; i < 6; i++) {
