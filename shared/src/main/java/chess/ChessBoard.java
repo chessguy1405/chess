@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -103,5 +106,40 @@ public class ChessBoard {
                 board[i][j] = null;
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+    ChessBoard that = (ChessBoard) obj;
+        return Arrays.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 43; // Give a non-zero, prime constant to help prevent collisions based on empty initial squares
+        /*
+         * Iteratively generates a unique hash based on the state of each square on the board.
+         * Order-dependent (using prime factors and non-zero constant to start)
+         * Runs from left to right, bottom to top (assuming 0,0 is the bottom left corner as will be displayed)
+         */
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = getPiece(position);
+                result *= 17;
+                if (piece != null) {
+                    result += Objects.hashCode(piece);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("This is filler text");
     }
 }
