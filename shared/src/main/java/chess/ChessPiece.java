@@ -1,7 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.List;
 
 /**
  * Represents a single chess piece
@@ -53,7 +55,135 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> moves = new ArrayList<>();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        if (type == PieceType.KING) {
+            /*
+            * Checks all possible moves for a king and adds them to the list if they are empty or have an enemy piece
+            * Does check the king's starting position, however this will never add
+            * his current spot as he is always his own color.
+            */
+            for (int i = -1; i < 2; i++) {
+                for (int j = -1; j < 2; j++) {
+                    ChessPosition newPosition = new ChessPosition(myPosition.getColumn() + i, myPosition.getRow() + j);
+                    ChessPiece occupyingPiece = board.getPiece(newPosition);
+                    if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) { moves.add(new ChessMove(myPosition, newPosition, null)); }
+                }
+            }
+
+        } else if (type == PieceType.QUEEN || type == PieceType.ROOK) {
+            // Handles orthogonal movement
+
+            // Backward movement
+            for (int i = row - 1; i > 0; i--) {
+                ChessPosition newPosition = new ChessPosition(i, col);
+                ChessPiece occupyingPiece = board.getPiece(newPosition);
+                if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
+                    moves.add(new ChessMove(myPosition, newPosition, null));
+                } else {
+                    break; // Stop looking further if it runs into its own piece
+                }
+            }
+            // Forward movement
+            for (int i = row + 1; i < 9; i++) {
+                ChessPosition newPosition = new ChessPosition(i, col);
+                ChessPiece occupyingPiece = board.getPiece(newPosition);
+                if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
+                    moves.add(new ChessMove(myPosition, newPosition, null));
+                } else {
+                    break; // Stop looking further if it runs into its own piece
+                }
+            }
+            // Left-side movement
+            for (int i = col - 1; i > 0; i--) {
+                ChessPosition newPosition = new ChessPosition(row, i);
+                ChessPiece occupyingPiece = board.getPiece(newPosition);
+                if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
+                    moves.add(new ChessMove(myPosition, newPosition, null));
+                } else {
+                    break; // Stop looking further if it runs into its own piece
+                }
+            }
+            // Right-side movement
+            for (int i = col + 1; i < 9; i++) {
+                ChessPosition newPosition = new ChessPosition(row, i);
+                ChessPiece occupyingPiece = board.getPiece(newPosition);
+                if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
+                    moves.add(new ChessMove(myPosition, newPosition, null));
+                } else {
+                    break; // Stop looking further if it runs into its own piece
+                }
+            }
+
+        } else if (type == PieceType.QUEEN || type == PieceType.BISHOP) {
+            // Handles diagonal movement
+
+            // Used to track if a friendly piece has been encountered in each direction
+            boolean isBlockedFrontLeft = false;
+            boolean isBlockedFrontRight = false;
+            boolean isBlockedBackLeft = false;
+            boolean isBlockedBackRight = false;
+
+            for (int i = 1; i < 8; i++) {
+                // Front Right movement
+                int newRow = row + i;
+                int newCol = col + i;
+                if (newRow > 8 || newCol > 8) { isBlockedBackLeft = true; }
+                if (!isBlockedFrontRight) {
+                    ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                    ChessPiece occupyingPiece = board.getPiece(newPosition);
+                    if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
+                        moves.add(new ChessMove(myPosition, newPosition, null));
+                    } else {
+                        isBlockedFrontRight = true;
+                    }
+                } else if (!isBlockedFrontLeft) { // Front Left movement
+                    newRow = row + i;
+                    newCol = col - i;
+                    if (newRow > 8 || newCol < 1) { isBlockedBackLeft = true; } else {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        ChessPiece occupyingPiece = board.getPiece(newPosition);
+                        if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        } else {
+                            isBlockedFrontLeft = true;
+                        }
+                    }
+                } else if (!isBlockedBackRight) { // Back Right movement
+                    newRow = row - i;
+                    newCol = col + i;
+                    if (newRow < 1 || newCol > 8) { isBlockedBackLeft = true; } else {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        ChessPiece occupyingPiece = board.getPiece(newPosition);
+                        if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        } else {
+                            isBlockedBackRight = true;
+                        }
+                    }
+                } else if (!isBlockedBackLeft) {
+                    newRow = row - i;
+                    newCol = col - i;
+                    if (newRow < 1 || newCol < 1) { isBlockedBackLeft = true; } else {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        ChessPiece occupyingPiece = board.getPiece(newPosition);
+                        if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        } else {
+                            isBlockedBackLeft = true;
+                        }
+                    }
+                }
+            }
+        } else if (type == PieceType.KNIGHT) {
+            // L-shaped jumping
+        } else { // Only remaining piece is a PAWN
+            // Single move forward, single attack diagonal, optional double move forward if still on first rank
+        }
+
+        return moves;
     }
 
     @Override
