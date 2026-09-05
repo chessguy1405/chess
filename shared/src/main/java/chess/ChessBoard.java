@@ -1,6 +1,8 @@
 package chess;
 
 import chess.ChessPiece;
+import chess.ChessPosition;
+import chess.ChessGame;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -9,7 +11,8 @@ import chess.ChessPiece;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    var board;
+
+    ChessPiece[][] board;
 
     public ChessBoard() {
         board = new ChessPiece[8][8]; // Create an empty 2D array (8x8) to represent the board itself
@@ -23,7 +26,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        board[position.getRowIndex][position.getColumnIndex] = piece;
+        board[position.getRowIndex()][position.getColumnIndex()] = piece;
     }
 
     /**
@@ -34,7 +37,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return board[position.getRowIndex][position.getColumnIndex];
+        return board[position.getRowIndex()][position.getColumnIndex()];
     }
 
     /**
@@ -43,7 +46,7 @@ public class ChessBoard {
      * @param position Where to remove the piece from
      */
     public void removePiece(ChessPosition position) {
-        board[position.getRowIndex][position.getColumnIndex] = null;
+        board[position.getRowIndex()][position.getColumnIndex()] = null;
     }
 
     /**
