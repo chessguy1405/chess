@@ -75,7 +75,7 @@ public class ChessPosition {
 
     @Override
     public int hashCode() {
-        return 31 * Objects.hashCode(row * column);
+        return 31 * Objects.hashCode(String.format("%s%s", getRank(), getColumn()));
     }
 
     /**    (non-Javadoc)
