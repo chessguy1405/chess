@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Objects;
+import java.util.Map;
+
 /**
  * Represents a single square position on a chess board
  * <p>
@@ -25,6 +28,18 @@ public class ChessPosition {
     }
 
     /**
+     * Converts row number of position to rank letter for chess notation:
+     * 1-8 -> a-h
+     * 
+     *
+     * @return a char corresponding to row number
+     */
+    public char getRank() {
+        Map<Integer, Character> conversionTable = Map.of(1, 'a', 2, 'b', 3, 'c', 4, 'd', 5, 'e', 6, 'f', 7, 'g', 8, 'h');
+        return conversionTable.get(getRow());
+    }
+
+    /**
      * @return which array row index this position is in
      * 0 codes for the bottom row
      */
@@ -46,5 +61,30 @@ public class ChessPosition {
      */
     public int getColumnIndex() {
         return this.column;
+    }
+
+        @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        ChessPosition that = (ChessPosition) obj;
+        return (row == that.row && column == that.column);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * Objects.hashCode(row * column);
+    }
+
+    /**    (non-Javadoc)
+     * Chess coordinates (e.g. b5) for the postition
+     * 
+     * @return a string in chess coordinate notation
+     */
+    @Override
+    public String toString() {
+        return String.format("%s%s", getRank(), getColumn());
     }
 }

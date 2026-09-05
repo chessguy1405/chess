@@ -3,16 +3,16 @@ public boolean equals(Object obj) {
     if (this == obj) return true;
     if (obj == null || getClass() != obj.getClass()) return false;
 
-    <ClassName> that = (<ClassName>) o;
+    <ClassName> that = (<ClassName>) obj;
     return <value>.equals(that.<value>);
 }
 
 @Override
 public int hashCode() {
-    return 31 * Objects.hashCode(<value>)
+    return 31 * Objects.hashCode(<value>);
 }
 
 @Override
 public String toString() {
-    return String.format("<example string>") // %s inserts a string value, %n inserts a newline
+    return String.format("<example string>"); // %s inserts a string value, %n inserts a newline
 }
