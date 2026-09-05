@@ -12,7 +12,6 @@ public class ChessBoard {
 
     public ChessBoard() {
         board = new ChessPiece[8][8]; // Create an empty 2D array (8x8) to represent the board itself
-        resetBoard();
     }
 
     /**
