@@ -34,9 +34,9 @@ public class ChessPosition {
      *
      * @return a char corresponding to row number
      */
-    public char getRank() {
+    public char getFile() {
         Map<Integer, Character> conversionTable = Map.of(1, 'a', 2, 'b', 3, 'c', 4, 'd', 5, 'e', 6, 'f', 7, 'g', 8, 'h');
-        return conversionTable.get(getRow());
+        return conversionTable.get(getColumn());
     }
 
     /**
@@ -75,16 +75,16 @@ public class ChessPosition {
 
     @Override
     public int hashCode() {
-        return 31 * Objects.hashCode(String.format("%s%s", getRank(), getColumn()));
+        return 31 * Objects.hashCode(String.format("%s%s", getFile(), getRow()));
     }
 
     /**    (non-Javadoc)
-     * Chess coordinates (e.g. b5) for the postition
+     * Chess coordinates (e.g. b5) for the position
      * 
      * @return a string in chess coordinate notation
      */
     @Override
     public String toString() {
-        return String.format("%s%s", getRank(), getColumn());
+        return String.format("%s%s", getFile(), getRow());
     }
 }

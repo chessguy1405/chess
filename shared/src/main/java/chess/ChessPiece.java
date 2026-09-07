@@ -89,10 +89,12 @@ public class ChessPiece {
         if (newRow < 9 && newRow > 0 && newCol < 9 && newCol > 0) {
             ChessPosition newPosition = new ChessPosition(newRow, newCol);
             ChessPiece occupyingPiece = board.getPiece(newPosition);
-            if (occupyingPiece == null || (newCol != startPosition.getColumn() && occupyingPiece.getTeamColor() != pieceColor)) {
+            if ((newCol == startPosition.getColumn() && occupyingPiece == null) || (newCol != startPosition.getColumn() && occupyingPiece != null && occupyingPiece.getTeamColor() != pieceColor)) {
                 if (canPromote) {
                     for (PieceType promotionPiece : PieceType.values()) {
-                        movesList.add(new ChessMove(startPosition, newPosition, promotionPiece));
+                        if (promotionPiece != PieceType.KING && promotionPiece != PieceType.PAWN) {
+                            movesList.add(new ChessMove(startPosition, newPosition, promotionPiece));
+                        }
                     }
                 } else {
                     movesList.add(new ChessMove(startPosition, newPosition, null));
@@ -242,19 +244,25 @@ public class ChessPiece {
             if (pieceColor == ChessGame.TeamColor.WHITE) {
                 if (row == 2) {
                     newRow = row + 2;
-                    addMove(moves, myPosition, newRow, col, board, false);
+                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row + 1, col));
+                    if (blockingPiece == null) {
+                        addMove(moves, myPosition, newRow, col, board, false);
+                    }
                 }
                 newRow = row + 1;
             } else {
                 if (row == 7) {
                     newRow = row - 2;
-                    addMove(moves, myPosition, newRow, col, board, false);
+                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row - 1, col));
+                    if (blockingPiece == null) {
+                        addMove(moves, myPosition, newRow, col, board, false);
+                    }
                 }
                 newRow = row - 1;
             }
             for (int i = -1; i < 2; i++) {
                 int newCol = col + i;
-                addMove(moves, myPosition, newRow, col, board, (newRow == 8 || newRow == 1));
+                addMove(moves, myPosition, newRow, newCol, board, (newRow == 8 || newRow == 1));
             }
         }
 
