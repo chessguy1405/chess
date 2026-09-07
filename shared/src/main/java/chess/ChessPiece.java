@@ -56,15 +56,44 @@ public class ChessPiece {
      * @param newRow an int representing the row of the destination square
      * @param newCol an int representing the column of the destination square
      * @param board the ChessBoard that the piece is moving on
-     * @param promotionPiece the PieceType of promotion, null unless a pawn is reaching the last row
      * @return true if the move was valid and added, false if not
      */
-    private boolean addMove(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board, PieceType promotionPiece) {
+    private boolean addMove(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board) {
         if (newRow < 9 && newRow > 0 && newCol < 9 && newCol > 0) {
             ChessPosition newPosition = new ChessPosition(newRow, newCol);
             ChessPiece occupyingPiece = board.getPiece(newPosition);
             if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
-                movesList.add(new ChessMove(startPosition, newPosition, promotionPiece));
+                movesList.add(new ChessMove(startPosition, newPosition, null));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Override of addMove() specifically for pawn movement.
+     * Only allows diagonal captures and allows a promotionPiece to be specified.
+     *
+     * @param movesList a Collection<ChessMove> containing all currently listed valid moves for the piece
+     * @param startPosition the ChessPosition where the piece starts the move
+     * @param newRow an int representing the row of the destination square
+     * @param newCol an int representing the column of the destination square
+     * @param board the ChessBoard that the piece is moving on
+     * @param canPromote a boolean indicating if the pawn can promote
+     * @return true if the move was legal and added, false if not
+     */
+    private boolean addMove(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board, boolean canPromote) {
+        if (newRow < 9 && newRow > 0 && newCol < 9 && newCol > 0) {
+            ChessPosition newPosition = new ChessPosition(newRow, newCol);
+            ChessPiece occupyingPiece = board.getPiece(newPosition);
+            if (occupyingPiece == null || (newCol != startPosition.getColumn() && occupyingPiece.getTeamColor() != pieceColor)) {
+                if (canPromote) {
+                    for (PieceType promotionPiece : PieceType.values()) {
+                        movesList.add(new ChessMove(startPosition, newPosition, promotionPiece));
+                    }
+                } else {
+                    movesList.add(new ChessMove(startPosition, newPosition, null));
+                }
                 return true;
             }
         }
@@ -95,38 +124,39 @@ public class ChessPiece {
                 for (int j = -1; j < 2; j++) {
                     newRow = row + i;
                     newCol = col + j;
-                    addMove(moves, myPosition, newRow, newCol, board, null);
+                    addMove(moves, myPosition, newRow, newCol, board);
                 }
             }
 
-        } else if (type == PieceType.QUEEN || type == PieceType.ROOK) {
+        }
+        if (type == PieceType.QUEEN || type == PieceType.ROOK) {
             // Handles orthogonal movement
 
             // Backward movement
             for (int i = row - 1; i > 0; i--) {
                 // Stops looking if it encounters an invalid move
-                if (!addMove(moves, myPosition, i, col, board, null)) {
+                if (!addMove(moves, myPosition, i, col, board)) {
                     break;
                 }
             }
             // Forward movement
             for (int i = row + 1; i < 9; i++) {
                 // Stops looking if it encounters an invalid move
-                if (!addMove(moves, myPosition, i, col, board, null)) {
+                if (!addMove(moves, myPosition, i, col, board)) {
                     break;
                 }
             }
             // Left-side movement
             for (int i = col - 1; i > 0; i--) {
                 // Stops looking if it encounters an invalid move
-                if (!addMove(moves, myPosition, row, i, board, null)) {
+                if (!addMove(moves, myPosition, row, i, board)) {
                     break;
                 }
             }
             // Right-side movement
             for (int i = col + 1; i < 9; i++) {
                 // Stops looking if it encounters an invalid move
-                if (!addMove(moves, myPosition, row, i, board, null)) {
+                if (!addMove(moves, myPosition, row, i, board)) {
                     break;
                 }
             }
@@ -135,7 +165,6 @@ public class ChessPiece {
 
         if (type == PieceType.QUEEN || type == PieceType.BISHOP) {
             // Handles diagonal movement
-            // Done as a separate if rather than else if to allow the queen to receive both orthogonal and diagonal movement
 
             // Used to track if movement has been blocked in each direction
             boolean isBlockedFrontLeft = false;
@@ -148,28 +177,28 @@ public class ChessPiece {
                 int newRow = row + i;
                 int newCol = col + i;
                 if (!isBlockedFrontRight) {
-                    if (!addMove(moves, myPosition, newRow, newCol, board, null)) {
+                    if (!addMove(moves, myPosition, newRow, newCol, board)) {
                         isBlockedFrontRight = true;
                     }
                 }
                 if (!isBlockedFrontLeft) { // Front Left movement
                     newRow = row + i;
                     newCol = col - i;
-                    if (!addMove(moves, myPosition, newRow, newCol, board, null)) {
+                    if (!addMove(moves, myPosition, newRow, newCol, board)) {
                         isBlockedFrontLeft = true;
                     }
                 }
                 if (!isBlockedBackRight) { // Back Right movement
                     newRow = row - i;
                     newCol = col + i;
-                    if (!addMove(moves, myPosition, newRow, newCol, board, null)) {
+                    if (!addMove(moves, myPosition, newRow, newCol, board)) {
                         isBlockedBackRight = true;
                     }
                 }
                 if (!isBlockedBackLeft) {
                     newRow = row - i;
                     newCol = col - i;
-                    if (!addMove(moves, myPosition, newRow, newCol, board, null)) {
+                    if (!addMove(moves, myPosition, newRow, newCol, board)) {
                         isBlockedBackLeft = true;
                     }
                 }
@@ -179,29 +208,29 @@ public class ChessPiece {
             // Handles L-shaped movement
             int newRow = row + 2;
             int newCol = col + 1;
-            addMove(moves, myPosition, newRow, newCol, board, null);
+            addMove(moves, myPosition, newRow, newCol, board);
 
             newCol = col - 1;
-            addMove(moves, myPosition, newRow, newCol, board, null);
+            addMove(moves, myPosition, newRow, newCol, board);
 
             newRow = row - 2;
-            addMove(moves, myPosition, newRow, newCol, board, null);
+            addMove(moves, myPosition, newRow, newCol, board);
 
             newCol = col + 1;
-            addMove(moves, myPosition, newRow, newCol, board, null);
+            addMove(moves, myPosition, newRow, newCol, board);
 
             newRow = row + 1;
             newCol = col + 2;
-            addMove(moves, myPosition, newRow, newCol, board, null);
+            addMove(moves, myPosition, newRow, newCol, board);
 
             newRow = row - 1;
-            addMove(moves, myPosition, newRow, newCol, board, null);
+            addMove(moves, myPosition, newRow, newCol, board);
 
             newCol = col - 2;
-            addMove(moves, myPosition, newRow, newCol, board, null);
+            addMove(moves, myPosition, newRow, newCol, board);
 
             newRow = row + 1;
-            addMove(moves, myPosition, newRow, newCol, board, null);
+            addMove(moves, myPosition, newRow, newCol, board);
 
         }
         if (type == PieceType.PAWN){ // Only remaining piece is a PAWN
@@ -210,38 +239,19 @@ public class ChessPiece {
             if (pieceColor == ChessGame.TeamColor.WHITE) {
                 if (row == 2) {
                     newRow = row + 2;
-                    ChessPosition newPosition = new ChessPosition(newRow, col);
-                    ChessPiece occupyingPiece = board.getPiece(newPosition);
-                    if (occupyingPiece == null) {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
+                    addMove(moves, myPosition, newRow, col, board, false);
                 }
                 newRow = row + 1;
             } else {
                 if (row == 7) {
                     newRow = row - 2;
-                    ChessPosition newPosition = new ChessPosition(newRow, col);
-                    ChessPiece occupyingPiece = board.getPiece(newPosition);
-                    if (occupyingPiece == null) {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
-
-                    newRow = row - 1;
+                    addMove(moves, myPosition, newRow, col, board, false);
                 }
+                newRow = row - 1;
             }
             for (int i = -1; i < 2; i++) {
                 int newCol = col + i;
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                ChessPiece occupyingPiece = board.getPiece(newPosition);
-                if (occupyingPiece == null || (i != 0 && occupyingPiece.getTeamColor() != pieceColor)) {
-                    if (newRow == 8 || newRow == 1) {
-                        for (PieceType promotionPiece : PieceType.values()) {
-                            moves.add(new ChessMove(myPosition, newPosition, promotionPiece));
-                        }
-                    } else {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
-                }
+                addMove(moves, myPosition, newRow, col, board, (newRow == 8 || newRow == 1));
             }
         }
 
