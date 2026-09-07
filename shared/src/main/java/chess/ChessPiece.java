@@ -56,15 +56,18 @@ public class ChessPiece {
      * @param newRow an int representing the row of the destination square
      * @param newCol an int representing the column of the destination square
      * @param board the ChessBoard that the piece is moving on
-     * @return true if the move was valid and added, false if not
+     * @return true if the move was valid and added and movement can continue, false if any of the above are not met
      */
     private boolean addMove(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board) {
         if (newRow < 9 && newRow > 0 && newCol < 9 && newCol > 0) {
             ChessPosition newPosition = new ChessPosition(newRow, newCol);
             ChessPiece occupyingPiece = board.getPiece(newPosition);
-            if (occupyingPiece == null || occupyingPiece.getTeamColor() != pieceColor) {
+            if (occupyingPiece == null) {
                 movesList.add(new ChessMove(startPosition, newPosition, null));
                 return true;
+            } else if (occupyingPiece.getTeamColor() != pieceColor) {
+                movesList.add(new ChessMove(startPosition, newPosition, null));
+                return false;
             }
         }
         return false;
