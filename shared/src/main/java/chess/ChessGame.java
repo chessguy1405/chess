@@ -65,25 +65,21 @@ public class ChessGame {
             System.out.println("No Piece Present!");
             return null;
         } else {
-            System.out.println(movingPiece.toString());
             Collection<ChessMove> possibleMoves = movingPiece.pieceMoves(board, startPosition);
             Collection<ChessMove> allowedMoves = new ArrayList<ChessMove>(possibleMoves);
             ChessBoard realBoard = new ChessBoard(board);
             for (ChessMove move : possibleMoves) {
-                ChessBoard testBoard = new ChessBoard(board);
-                testBoard.addPiece(move.getEndPosition(), movingPiece);
-                testBoard.removePiece(move.getStartPosition());
+                board.addPiece(move.getEndPosition(), movingPiece);
+                board.removePiece(move.getStartPosition());
                 if (isInCheck(teamTurn)) {
                     allowedMoves.remove(move);
                 }
-                board = realBoard;
+                board = new ChessBoard(realBoard);
             }
-            if (allowedMoves.isEmpty()) {
-                System.out.println("Piece present, but no valid moves!");
-                return null;
-            } else {
-                return allowedMoves;
+            for (ChessMove move : allowedMoves) {
+                System.out.println(move);
             }
+            return allowedMoves;
         }
     }
 
@@ -99,37 +95,24 @@ public class ChessGame {
         // Collection<ChessMove> goodMoves = movingPiece.pieceMoves(board, move.getStartPosition());
 
         if (movingPiece == null) {
-            System.out.println("No piece present when move made!");
-        } else {
-            System.out.println(movingPiece.toString());
-        }
-        if (goodMoves == null) {
+            throw new InvalidMoveException("No piece present!");
+        } else if (goodMoves == null) {
             System.out.println(move.toString());
             throw new InvalidMoveException("No valid moves from this square");
         } else if (!goodMoves.contains(move)) {
             System.out.println(move.toString());
             throw new InvalidMoveException("Invalid move, moves available.");
+        } else if (movingPiece.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException(String.format("Out of turn. Current turn is: %s", teamTurn));
         }
 
         if (move.getPromotionPiece() != null) {
             movingPiece = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece());
-            if (movingPiece == null) {
-                System.out.println("No piece present when promoting!");
-            } else {
-                System.out.println(movingPiece.toString());
-            }
         }
 
 
         board.removePiece(move.getStartPosition());
-        if (board.getPiece(move.getStartPosition()) != null) {
-            System.out.println(board.getPiece(move.getEndPosition()).toString());
-        } else { System.out.println("No Piece at Start Position!"); }
         board.addPiece(move.getEndPosition(), movingPiece);
-        if (board.getPiece(move.getEndPosition()) != null) {
-            System.out.println(board.getPiece(move.getEndPosition()).toString());
-        } else { System.out.println("No Piece at End Position!"); }
-        System.out.println();
         passTurn();
     }
 
@@ -145,6 +128,9 @@ public class ChessGame {
             for (int j = 1; j < 9; j++) {
                 ChessPosition square = new ChessPosition(i, j);
                 ChessPiece occupyingPiece = board.getPiece(square);
+                if (occupyingPiece != null) {
+                    System.out.println(occupyingPiece.toString());
+                }
                 if (occupyingPiece != null && occupyingPiece.getTeamColor() == teamColor && occupyingPiece.getPieceType() == ChessPiece.PieceType.KING) {
                     kingSquare = square;
                     break;
@@ -181,12 +167,16 @@ public class ChessGame {
                 ChessPiece occupyingPiece = board.getPiece(square);
                 if (occupyingPiece != null && occupyingPiece.getTeamColor() == teamColor) {
                     Collection<ChessMove> possibleMoves = validMoves(square);
-                    if (possibleMoves != null) {
+                    if (possibleMoves != null && !possibleMoves.isEmpty()) {
+                        System.out.println(String.format("Found a move for %s", occupyingPiece.toString()));
                         return true; // Return false if at least one legal move is found
+                    } else {
+                        System.out.println(String.format("No moves for %s", occupyingPiece.toString()));
                     }
                 }
             }
         }
+        System.out.println(String.format("No possible moves found for %s", teamColor));
         return false; // Return false if all pieces on the board of that color cannot move
     }
 
@@ -208,7 +198,13 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return (!isInCheck(teamColor) && !canMove(teamColor));
+        TeamColor otherTeam;
+        if (teamColor == TeamColor.BLACK) {
+            otherTeam = TeamColor.WHITE;
+        } else {
+            otherTeam = TeamColor.BLACK;
+        }
+        return (!isInCheck(teamColor) && !canMove(teamColor) && !isInCheckmate(teamColor) && !isInCheckmate(otherTeam));
     }
 
     /**

@@ -70,6 +70,10 @@ public class ValidMovesTests {
     @Test
     @DisplayName("Piece Completely Trapped")
     public void rookPinnedToKing() {
+        System.out.println();
+        System.out.println();
+        System.out.println("Beginning of pinned rook exercise");
+        System.out.println();
 
         var game = new ChessGame();
         game.setBoard(TestUtilities.loadBoard("""
