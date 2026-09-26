@@ -11,10 +11,27 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    ChessPiece[][] board;
+    private ChessPiece[][] board;
 
     public ChessBoard() {
         board = new ChessPiece[8][8]; // Create an empty 2D array (8x8) to represent the board itself
+    }
+
+    public ChessBoard(ChessBoard other) {
+        this.board = new ChessPiece[8][8];
+        if (other != null) {
+            for (int i = 0; i < 8; i++) {
+                int row = i + 1;
+                for (int j = 0; j < 8; j++) {
+                    int col = j + 1;
+                    ChessPosition square = new ChessPosition(row, col);
+                    ChessPiece existingPiece = other.getPiece(square);
+                    if (existingPiece != null) {
+                        board[i][j] = new ChessPiece(existingPiece);
+                    }
+                }
+            }
+        }
     }
 
     /**
