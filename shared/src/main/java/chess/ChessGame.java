@@ -198,13 +198,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        TeamColor otherTeam;
-        if (teamColor == TeamColor.BLACK) {
-            otherTeam = TeamColor.WHITE;
-        } else {
-            otherTeam = TeamColor.BLACK;
-        }
-        return (!isInCheck(teamColor) && !canMove(teamColor) && !isInCheckmate(teamColor) && !isInCheckmate(otherTeam));
+        return (!isInCheck(teamColor) && !canMove(teamColor));
     }
 
     /**
