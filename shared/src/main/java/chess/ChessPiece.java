@@ -20,6 +20,10 @@ public class ChessPiece {
         this.type = type;
     }
 
+    /**
+     * Copy constructor for the ChessPiece class
+     * @param piece the ChessPiece object you are copying
+     */
     public ChessPiece(ChessPiece piece) {
         this.type = piece.type;
         this.pieceColor = piece.pieceColor;

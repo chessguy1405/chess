@@ -17,6 +17,10 @@ public class ChessBoard {
         board = new ChessPiece[8][8]; // Create an empty 2D array (8x8) to represent the board itself
     }
 
+    /**
+     * Copy constructor for the ChessBoard class
+     * @param other the ChessBoard object you are copying
+     */
     public ChessBoard(ChessBoard other) {
         this.board = new ChessPiece[8][8];
         if (other != null) {
