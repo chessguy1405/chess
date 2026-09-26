@@ -36,6 +36,11 @@ public class ChessGame {
         this.teamTurn = team;
     }
 
+
+    /**
+     * Used to transfer the turn from White to Black and Black to white
+     * Called after a move is made
+     */
     private void passTurn() {
         if (teamTurn == TeamColor.BLACK) {
             teamTurn = TeamColor.WHITE;
@@ -160,6 +165,11 @@ public class ChessGame {
         return false;
     }
 
+    /**
+     *
+     * @param teamColor a TeamColor enum for which team is being checked for valid moves
+     * @return false if no valid moves exist for the team, true if at least one does
+     */
     private boolean canMove(TeamColor teamColor) {
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
