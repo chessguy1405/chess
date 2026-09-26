@@ -67,7 +67,6 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece movingPiece = board.getPiece(startPosition);
         if (movingPiece == null) {
-            System.out.println("No Piece Present!");
             return null;
         } else {
             Collection<ChessMove> possibleMoves = movingPiece.pieceMoves(board, startPosition);
@@ -80,9 +79,6 @@ public class ChessGame {
                     allowedMoves.remove(move);
                 }
                 board = new ChessBoard(realBoard);
-            }
-            for (ChessMove move : allowedMoves) {
-                System.out.println(move);
             }
             return allowedMoves;
         }
@@ -97,15 +93,12 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> goodMoves = validMoves(move.getStartPosition());
         ChessPiece movingPiece = board.getPiece(move.getStartPosition());
-        // Collection<ChessMove> goodMoves = movingPiece.pieceMoves(board, move.getStartPosition());
 
         if (movingPiece == null) {
             throw new InvalidMoveException("No piece present!");
         } else if (goodMoves == null) {
-            System.out.println(move.toString());
             throw new InvalidMoveException("No valid moves from this square");
         } else if (!goodMoves.contains(move)) {
-            System.out.println(move.toString());
             throw new InvalidMoveException("Invalid move, moves available.");
         } else if (movingPiece.getTeamColor() != teamTurn) {
             throw new InvalidMoveException(String.format("Out of turn. Current turn is: %s", teamTurn));
@@ -133,9 +126,6 @@ public class ChessGame {
             for (int j = 1; j < 9; j++) {
                 ChessPosition square = new ChessPosition(i, j);
                 ChessPiece occupyingPiece = board.getPiece(square);
-                if (occupyingPiece != null) {
-                    System.out.println(occupyingPiece.toString());
-                }
                 if (occupyingPiece != null && occupyingPiece.getTeamColor() == teamColor && occupyingPiece.getPieceType() == ChessPiece.PieceType.KING) {
                     kingSquare = square;
                     break;
@@ -178,15 +168,11 @@ public class ChessGame {
                 if (occupyingPiece != null && occupyingPiece.getTeamColor() == teamColor) {
                     Collection<ChessMove> possibleMoves = validMoves(square);
                     if (possibleMoves != null && !possibleMoves.isEmpty()) {
-                        System.out.println(String.format("Found a move for %s", occupyingPiece.toString()));
                         return true; // Return false if at least one legal move is found
-                    } else {
-                        System.out.println(String.format("No moves for %s", occupyingPiece.toString()));
                     }
                 }
             }
         }
-        System.out.println(String.format("No possible moves found for %s", teamColor));
         return false; // Return false if all pieces on the board of that color cannot move
     }
 
