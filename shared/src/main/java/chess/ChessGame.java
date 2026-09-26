@@ -71,7 +71,7 @@ public class ChessGame {
             for (ChessMove move : possibleMoves) {
                 board.addPiece(move.getEndPosition(), movingPiece);
                 board.removePiece(move.getStartPosition());
-                if (isInCheck(teamTurn)) {
+                if (isInCheck(movingPiece.getTeamColor())) {
                     allowedMoves.remove(move);
                 }
                 board = new ChessBoard(realBoard);
