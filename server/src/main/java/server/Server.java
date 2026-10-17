@@ -2,6 +2,8 @@ package server;
 
 import io.javalin.*;
 import io.javalin.http.Context;
+import com.google.gson.Gson;
+import java.util.Map;
 
 public class Server {
 
@@ -30,12 +32,60 @@ public class Server {
         javalin.stop();
     }
 
-    private void exampleHandler(Context context) {}
-    private void clearData(Context context) {}
-    private void joinGame(Context context) {}
-    private void newGame(Context context) {}
-    private void listGames(Context context) {}
-    private void logout(Context context) {}
-    private void login(Context context) {}
-    private void register(Context context) {}
+    private final Gson serializer = new Gson();
+    private final String unauthorizedJson = serializer.toJson(Map.of("message", "Error: Unauthorized"));
+    private final String serverErrorJson = serializer.toJson(Map.of("message", "Error: Internal Server Error"));
+
+    private void clearData(Context context) {
+        context.status(500);
+        context.json(serverErrorJson);
+    }
+    private void joinGame(Context context) {
+        String token = context.header("authToken");
+        if (token == null || token.isEmpty()) {
+            context.status(401);
+            context.json(unauthorizedJson);
+        } else {
+            context.status(500);
+            context.json(serverErrorJson);
+        }
+    }
+    private void newGame(Context context) {
+        String token = context.header("authToken");
+        if (token == null || token.isEmpty()) {
+            context.status(401);
+            context.json(unauthorizedJson);
+        } else {
+            context.status(500);
+            context.json(serverErrorJson);
+        }
+    }
+    private void listGames(Context context) {
+        String token = context.header("authToken");
+        if (token == null || token.isEmpty()) {
+            context.status(401);
+            context.json(unauthorizedJson);
+        } else {
+            context.status(500);
+            context.json(serverErrorJson);
+        }
+    }
+    private void logout(Context context) {
+        String token = context.header("authToken");
+        if (token == null || token.isEmpty()) {
+            context.status(401);
+            context.json(unauthorizedJson);
+        } else {
+            context.status(500);
+            context.json(serverErrorJson);
+        }
+    }
+    private void login(Context context) {
+        context.status(500);
+        context.json(serverErrorJson);
+    }
+    private void register(Context context) {
+        context.status(500);
+        context.json(serverErrorJson);
+    }
 }
