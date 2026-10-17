@@ -90,19 +90,19 @@ public class ChessPiece {
     }
 
     private boolean addMovesForPawn(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board) {
-        boolean canPromote = newRow == 8 || newRow == 1;
         if (newRow < 9 && newRow > 0 && newCol < 9 && newCol > 0) {
-            ChessPosition newPosition = new ChessPosition(newRow, newCol);
-            ChessPiece occupyingPiece = board.getPiece(newPosition);
-            boolean hasFreeFront = newCol == startPosition.getColumn() && occupyingPiece == null;
-            boolean isOtherTeamOnSquare = occupyingPiece != null && occupyingPiece.getTeamColor() != pieceColor;
-            boolean canCapture = newCol != startPosition.getColumn() && isOtherTeamOnSquare;
-            return canMoveAddMove(movesList, startPosition, hasFreeFront, canCapture, canPromote, newPosition);
+            return canMoveAddMove(movesList, startPosition, newRow, newCol, board);
         }
         return false;
     }
 
-    private static boolean canMoveAddMove(Collection<ChessMove> movesList, ChessPosition startPosition, boolean hasFreeFront, boolean canCapture, boolean canPromote, ChessPosition newPosition) {
+    private boolean canMoveAddMove(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board) {
+        boolean canPromote = newRow == 8 || newRow == 1;
+        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+        ChessPiece occupyingPiece = board.getPiece(newPosition);
+        boolean hasFreeFront = newCol == startPosition.getColumn() && occupyingPiece == null;
+        boolean isOtherTeamOnSquare = occupyingPiece != null && occupyingPiece.getTeamColor() != pieceColor;
+        boolean canCapture = newCol != startPosition.getColumn() && isOtherTeamOnSquare;
         if (hasFreeFront || canCapture) {
             if (canPromote) { addPromotionMoves(movesList, startPosition, newPosition); }
             else { movesList.add(new ChessMove(startPosition, newPosition, null)); }
@@ -149,138 +149,154 @@ public class ChessPiece {
 
         }
         if (type == PieceType.QUEEN || type == PieceType.ROOK) {
-            // Handles orthogonal movement
-
-            // Backward movement
-            for (int i = row - 1; i > 0; i--) {
-                // Stops looking if it encounters an invalid move
-                if (!addMove(moves, myPosition, i, col, board)) {
-                    break;
-                }
-            }
-            // Forward movement
-            for (int i = row + 1; i < 9; i++) {
-                // Stops looking if it encounters an invalid move
-                if (!addMove(moves, myPosition, i, col, board)) {
-                    break;
-                }
-            }
-            // Left-side movement
-            for (int i = col - 1; i > 0; i--) {
-                // Stops looking if it encounters an invalid move
-                if (!addMove(moves, myPosition, row, i, board)) {
-                    break;
-                }
-            }
-            // Right-side movement
-            for (int i = col + 1; i < 9; i++) {
-                // Stops looking if it encounters an invalid move
-                if (!addMove(moves, myPosition, row, i, board)) {
-                    break;
-                }
-            }
+            moveRook(board, myPosition, row, moves, col);
 
         }
 
         if (type == PieceType.QUEEN || type == PieceType.BISHOP) {
-            // Handles diagonal movement
-
-            // Used to track if movement has been blocked in each direction
-            boolean isBlockedFrontLeft = false;
-            boolean isBlockedFrontRight = false;
-            boolean isBlockedBackLeft = false;
-            boolean isBlockedBackRight = false;
-
-            for (int i = 1; i < 8; i++) {
-                // Front Right movement
-                int newRow = row + i;
-                int newCol = col + i;
-                if (!isBlockedFrontRight) {
-                    if (!addMove(moves, myPosition, newRow, newCol, board)) {
-                        isBlockedFrontRight = true;
-                    }
-                }
-                if (!isBlockedFrontLeft) { // Front Left movement
-                    newRow = row + i;
-                    newCol = col - i;
-                    if (!addMove(moves, myPosition, newRow, newCol, board)) {
-                        isBlockedFrontLeft = true;
-                    }
-                }
-                if (!isBlockedBackRight) { // Back Right movement
-                    newRow = row - i;
-                    newCol = col + i;
-                    if (!addMove(moves, myPosition, newRow, newCol, board)) {
-                        isBlockedBackRight = true;
-                    }
-                }
-                if (!isBlockedBackLeft) {
-                    newRow = row - i;
-                    newCol = col - i;
-                    if (!addMove(moves, myPosition, newRow, newCol, board)) {
-                        isBlockedBackLeft = true;
-                    }
-                }
-            }
+            moveBishop(board, myPosition, row, col, moves);
         }
         if (type == PieceType.KNIGHT) {
-            // Handles L-shaped movement
-            int newRow = row + 2;
-            int newCol = col + 1;
-            addMove(moves, myPosition, newRow, newCol, board);
-
-            newCol = col - 1;
-            addMove(moves, myPosition, newRow, newCol, board);
-
-            newRow = row - 2;
-            addMove(moves, myPosition, newRow, newCol, board);
-
-            newCol = col + 1;
-            addMove(moves, myPosition, newRow, newCol, board);
-
-            newRow = row + 1;
-            newCol = col + 2;
-            addMove(moves, myPosition, newRow, newCol, board);
-
-            newRow = row - 1;
-            addMove(moves, myPosition, newRow, newCol, board);
-
-            newCol = col - 2;
-            addMove(moves, myPosition, newRow, newCol, board);
-
-            newRow = row + 1;
-            addMove(moves, myPosition, newRow, newCol, board);
+            moveKnight(board, myPosition, row, col, moves);
 
         }
-        if (type == PieceType.PAWN){ // Only remaining piece is a PAWN
-            // Single move forward, single attack diagonal, optional double move forward if still on first rank
-            int newRow = row;
-            if (pieceColor == ChessGame.TeamColor.WHITE) {
-                if (row == 2) {
-                    newRow = row + 2;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row + 1, col));
-                    if (blockingPiece == null) {
-                        addMove(moves, myPosition, newRow, col, board);
-                    }
-                }
-                newRow = row + 1;
-            } else {
-                if (row == 7) {
-                    newRow = row - 2;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row - 1, col));
-                    if (blockingPiece == null) {
-                        addMove(moves, myPosition, newRow, col, board);
-                    }
-                }
-                newRow = row - 1;
-            }
-            for (int i = -1; i < 2; i++) {
-                int newCol = col + i;
-                addMove(moves, myPosition, newRow, newCol, board);
-            }
+        if (type == PieceType.PAWN){
+            movePawn(board, myPosition, row, col, moves);
         }
 
         return moves;
+    }
+
+    private void movePawn(ChessBoard board, ChessPosition myPosition, int row, int col, Collection<ChessMove> moves) {
+        // Single move forward, single attack diagonal, optional double move forward if still on first rank
+        int newRow = row;
+        if (pieceColor == ChessGame.TeamColor.WHITE) {
+            if (row == 2) {
+                newRow = row + 2;
+                ChessPiece blockingPiece = board.getPiece(new ChessPosition(row + 1, col));
+                if (blockingPiece == null) {
+                    addMove(moves, myPosition, newRow, col, board);
+                }
+            }
+            newRow = row + 1;
+        } else {
+            if (row == 7) {
+                newRow = row - 2;
+                ChessPiece blockingPiece = board.getPiece(new ChessPosition(row - 1, col));
+                if (blockingPiece == null) {
+                    addMove(moves, myPosition, newRow, col, board);
+                }
+            }
+            newRow = row - 1;
+        }
+        for (int i = -1; i < 2; i++) {
+            int newCol = col + i;
+            addMove(moves, myPosition, newRow, newCol, board);
+        }
+    }
+
+    private void moveKnight(ChessBoard board, ChessPosition myPosition, int row, int col, Collection<ChessMove> moves) {
+        // Handles L-shaped movement
+        int newRow = row + 2;
+        int newCol = col + 1;
+        addMove(moves, myPosition, newRow, newCol, board);
+
+        newCol = col - 1;
+        addMove(moves, myPosition, newRow, newCol, board);
+
+        newRow = row - 2;
+        addMove(moves, myPosition, newRow, newCol, board);
+
+        newCol = col + 1;
+        addMove(moves, myPosition, newRow, newCol, board);
+
+        newRow = row + 1;
+        newCol = col + 2;
+        addMove(moves, myPosition, newRow, newCol, board);
+
+        newRow = row - 1;
+        addMove(moves, myPosition, newRow, newCol, board);
+
+        newCol = col - 2;
+        addMove(moves, myPosition, newRow, newCol, board);
+
+        newRow = row + 1;
+        addMove(moves, myPosition, newRow, newCol, board);
+    }
+
+    private void moveBishop(ChessBoard board, ChessPosition myPosition, int row, int col, Collection<ChessMove> moves) {
+        // Handles diagonal movement
+
+        // Used to track if movement has been blocked in each direction
+        boolean isBlockedFrontLeft = false;
+        boolean isBlockedFrontRight = false;
+        boolean isBlockedBackLeft = false;
+        boolean isBlockedBackRight = false;
+
+        for (int i = 1; i < 8; i++) {
+            // Front Right movement
+            int newRow = row + i;
+            int newCol = col + i;
+            if (!isBlockedFrontRight) {
+                if (!addMove(moves, myPosition, newRow, newCol, board)) {
+                    isBlockedFrontRight = true;
+                }
+            }
+            if (!isBlockedFrontLeft) { // Front Left movement
+                newRow = row + i;
+                newCol = col - i;
+                if (!addMove(moves, myPosition, newRow, newCol, board)) {
+                    isBlockedFrontLeft = true;
+                }
+            }
+            if (!isBlockedBackRight) { // Back Right movement
+                newRow = row - i;
+                newCol = col + i;
+                if (!addMove(moves, myPosition, newRow, newCol, board)) {
+                    isBlockedBackRight = true;
+                }
+            }
+            if (!isBlockedBackLeft) {
+                newRow = row - i;
+                newCol = col - i;
+                if (!addMove(moves, myPosition, newRow, newCol, board)) {
+                    isBlockedBackLeft = true;
+                }
+            }
+        }
+    }
+
+    private void moveRook(ChessBoard board, ChessPosition myPosition, int row, Collection<ChessMove> moves, int col) {
+        // Handles orthogonal movement
+
+        // Backward movement
+        for (int i = row - 1; i > 0; i--) {
+            // Stops looking if it encounters an invalid move
+            if (!addMove(moves, myPosition, i, col, board)) {
+                break;
+            }
+        }
+        // Forward movement
+        for (int i = row + 1; i < 9; i++) {
+            // Stops looking if it encounters an invalid move
+            if (!addMove(moves, myPosition, i, col, board)) {
+                break;
+            }
+        }
+        // Left-side movement
+        for (int i = col - 1; i > 0; i--) {
+            // Stops looking if it encounters an invalid move
+            if (!addMove(moves, myPosition, row, i, board)) {
+                break;
+            }
+        }
+        // Right-side movement
+        for (int i = col + 1; i < 9; i++) {
+            // Stops looking if it encounters an invalid move
+            if (!addMove(moves, myPosition, row, i, board)) {
+                break;
+            }
+        }
     }
 
     @Override

@@ -230,8 +230,8 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) { return true; }
+        if (obj == null || getClass() != obj.getClass()) { return false; }
 
     ChessGame that = (ChessGame) obj;
         return board.equals(that.board) && this.teamTurn == that.teamTurn;
