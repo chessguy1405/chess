@@ -4,6 +4,8 @@ import model.GameData;
 
 import java.util.Collection;
 
-public interface ReadGameData {
+public interface GameDataAccess {
+    void clearData();
+    void newGame(GameData gameData);
     Collection<GameData> getGames();
 }

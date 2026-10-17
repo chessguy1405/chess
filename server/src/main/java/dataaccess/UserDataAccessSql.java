@@ -1,6 +1,6 @@
 package dataaccess;
 
-public class ClearUserDataSql implements ClearUserData {
+public class UserDataAccessSql implements UserDataAccess {
     public void clearData() {
         // Clears all user data from SQL database
     }

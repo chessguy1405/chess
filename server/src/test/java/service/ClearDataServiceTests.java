@@ -9,17 +9,14 @@ import java.util.Collection;
 
 public class ClearDataServiceTests {
 
-    ClearGameData cleanupGames = new ClearGameDataMem();
-    ClearUserData cleanupUsers = new ClearUserDataMem();
-    ReadGameData gameReader = new ReadGameDataMem();
-    ReadUserData userReader = new ReadUserDataMem();
-    CreateGameData gameMaker = new CreateGameDataMem();
-    CreateUserData userMaker = new CreateUserDataMem();
+    GameDataAccess gamesAccess = new GameDataAccessMem();
+    UserDataAccess usersAccess = new UserDataAccessMem();
+
 
     @BeforeEach
     public void cleanupData() {
-        cleanupGames.clearData();
-        cleanupUsers.clearData();
+        gamesAccess.clearData();
+        usersAccess.clearData();
     }
 
     @Test
@@ -81,8 +78,8 @@ public class ClearDataServiceTests {
 
     private void checkUsersAndGames() {
         Assertions.assertDoesNotThrow(ClearDataService::clearAllData);
-        Collection<GameData> gameList = Assertions.assertDoesNotThrow(() -> gameReader.getGames());
-        Collection<UserData> userList = Assertions.assertDoesNotThrow(() -> userReader.getUsers());
+        Collection<GameData> gameList = Assertions.assertDoesNotThrow(() -> gamesAccess.getGames());
+        Collection<UserData> userList = Assertions.assertDoesNotThrow(() -> usersAccess.getUsers());
         assert(gameList == null);
         assert(userList == null);
     }
@@ -91,7 +88,7 @@ public class ClearDataServiceTests {
         int i = 0;
         while (i < gameCount) {
             String gameName = String.valueOf(i);
-            gameMaker.newGame(new GameData(i, "test", "test", gameName, new ChessGame()));
+            gamesAccess.newGame(new GameData(i, "test", "test", gameName, new ChessGame()));
             i++;
         }
     }
@@ -100,7 +97,7 @@ public class ClearDataServiceTests {
         int i = 0;
         while (i < userCount) {
             String userName = String.valueOf(i);
-            userMaker.newUser(new UserData(userName, userName, userName));
+            usersAccess.newUser(new UserData(userName, userName, userName));
             i++;
         }
     }

@@ -1,6 +1,5 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.*;
 import org.junit.jupiter.api.*;
 import model.*;
@@ -9,12 +8,11 @@ import java.util.Collection;
 
 public class CreateGameServiceTests {
 
-    ClearGameData cleanup = new ClearGameDataMem();
-    ReadGameData gameReader = new ReadGameDataMem();
+    GameDataAccess gamesAccess = new GameDataAccessMem();
 
     @BeforeEach
     public void clearGames() {
-        cleanup.clearData();
+        gamesAccess.clearData();
     }
 
     @Test
@@ -37,7 +35,7 @@ public class CreateGameServiceTests {
     }
 
     private void countGames(int expected) {
-        Collection<GameData> gameList = gameReader.getGames();
+        Collection<GameData> gameList = gamesAccess.getGames();
         assert(gameList.size() == expected);
     }
 }

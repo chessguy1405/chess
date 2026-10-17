@@ -1,14 +1,14 @@
 package service;
 
-import dataaccess.ClearUserData;
-import dataaccess.ClearUserDataMem;
+import dataaccess.UserDataAccess;
+import dataaccess.UserDataAccessMem;
 import org.junit.jupiter.api.*;
 import model.UserData;
 import model.LoginResult;
 
 public class RegisterServiceTests {
 
-    ClearUserData cleanup = new ClearUserDataMem();
+    UserDataAccess cleanup = new UserDataAccessMem();
 
     UserData user1 = new UserData("user", "pass", "email");
     UserData user2 = new UserData("user", "pass", "email");
