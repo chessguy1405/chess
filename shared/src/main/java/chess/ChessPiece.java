@@ -67,6 +67,14 @@ public class ChessPiece {
      * @return true if the move was valid and added and movement can continue, false if any of the above are not met
      */
     private boolean addMove(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board) {
+        if (board.getPiece(startPosition).getPieceType().equals(PieceType.PAWN)) {
+            return addMovesForPawn(movesList, startPosition, newRow, newCol, board);
+        }
+
+        return addMovesForPiece(movesList, startPosition, newRow, newCol, board);
+    }
+
+    private boolean addMovesForPiece(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board) {
         if (newRow < 9 && newRow > 0 && newCol < 9 && newCol > 0) {
             ChessPosition newPosition = new ChessPosition(newRow, newCol);
             ChessPiece occupyingPiece = board.getPiece(newPosition);
@@ -81,36 +89,34 @@ public class ChessPiece {
         return false;
     }
 
-    /**
-     * Override of addMove() specifically for pawn movement.
-     * Only allows diagonal captures and allows a promotionPiece to be specified.
-     *
-     * @param movesList a Collection<ChessMove> containing all currently listed valid moves for the piece
-     * @param startPosition the ChessPosition where the piece starts the move
-     * @param newRow an int representing the row of the destination square
-     * @param newCol an int representing the column of the destination square
-     * @param board the ChessBoard that the piece is moving on
-     * @param canPromote a boolean indicating if the pawn can promote
-     * @return true if the move was legal and added, false if not
-     */
-    private boolean addMove(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board, boolean canPromote) {
+    private boolean addMovesForPawn(Collection<ChessMove> movesList, ChessPosition startPosition, int newRow, int newCol, ChessBoard board) {
+        boolean canPromote = newRow == 8 || newRow == 1;
         if (newRow < 9 && newRow > 0 && newCol < 9 && newCol > 0) {
             ChessPosition newPosition = new ChessPosition(newRow, newCol);
             ChessPiece occupyingPiece = board.getPiece(newPosition);
-            if ((newCol == startPosition.getColumn() && occupyingPiece == null) || (newCol != startPosition.getColumn() && occupyingPiece != null && occupyingPiece.getTeamColor() != pieceColor)) {
-                if (canPromote) {
-                    for (PieceType promotionPiece : PieceType.values()) {
-                        if (promotionPiece != PieceType.KING && promotionPiece != PieceType.PAWN) {
-                            movesList.add(new ChessMove(startPosition, newPosition, promotionPiece));
-                        }
-                    }
-                } else {
-                    movesList.add(new ChessMove(startPosition, newPosition, null));
-                }
-                return true;
-            }
+            boolean hasFreeFront = newCol == startPosition.getColumn() && occupyingPiece == null;
+            boolean isOtherTeamOnSquare = occupyingPiece != null && occupyingPiece.getTeamColor() != pieceColor;
+            boolean canCapture = newCol != startPosition.getColumn() && isOtherTeamOnSquare;
+            return canMoveAddMove(movesList, startPosition, hasFreeFront, canCapture, canPromote, newPosition);
         }
         return false;
+    }
+
+    private static boolean canMoveAddMove(Collection<ChessMove> movesList, ChessPosition startPosition, boolean hasFreeFront, boolean canCapture, boolean canPromote, ChessPosition newPosition) {
+        if (hasFreeFront || canCapture) {
+            if (canPromote) { addPromotionMoves(movesList, startPosition, newPosition); }
+            else { movesList.add(new ChessMove(startPosition, newPosition, null)); }
+            return true;
+        }
+        return false;
+    }
+
+    private static void addPromotionMoves(Collection<ChessMove> movesList, ChessPosition startPosition, ChessPosition newPosition) {
+        for (PieceType promotionPiece : PieceType.values()) {
+            boolean isNotKing = promotionPiece != PieceType.KING;
+            boolean isNotPawn = promotionPiece != PieceType.PAWN;
+            if (isNotKing && isNotPawn) { movesList.add(new ChessMove(startPosition, newPosition, promotionPiece)); }
+        }
     }
 
     /**
@@ -254,7 +260,7 @@ public class ChessPiece {
                     newRow = row + 2;
                     ChessPiece blockingPiece = board.getPiece(new ChessPosition(row + 1, col));
                     if (blockingPiece == null) {
-                        addMove(moves, myPosition, newRow, col, board, false);
+                        addMove(moves, myPosition, newRow, col, board);
                     }
                 }
                 newRow = row + 1;
@@ -263,14 +269,14 @@ public class ChessPiece {
                     newRow = row - 2;
                     ChessPiece blockingPiece = board.getPiece(new ChessPosition(row - 1, col));
                     if (blockingPiece == null) {
-                        addMove(moves, myPosition, newRow, col, board, false);
+                        addMove(moves, myPosition, newRow, col, board);
                     }
                 }
                 newRow = row - 1;
             }
             for (int i = -1; i < 2; i++) {
                 int newCol = col + i;
-                addMove(moves, myPosition, newRow, newCol, board, (newRow == 8 || newRow == 1));
+                addMove(moves, myPosition, newRow, newCol, board);
             }
         }
 
@@ -279,8 +285,8 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) { return true; }
+        if (obj == null || getClass() != obj.getClass()) { return false; }
 
     ChessPiece that = (ChessPiece) obj;
         return (pieceColor.equals(that.pieceColor) && type.equals(that.type));

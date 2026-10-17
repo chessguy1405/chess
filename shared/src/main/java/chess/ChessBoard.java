@@ -24,17 +24,25 @@ public class ChessBoard {
     public ChessBoard(ChessBoard other) {
         this.board = new ChessPiece[8][8];
         if (other != null) {
-            for (int i = 0; i < 8; i++) {
-                int row = i + 1;
-                for (int j = 0; j < 8; j++) {
-                    int col = j + 1;
-                    ChessPosition square = new ChessPosition(row, col);
-                    ChessPiece existingPiece = other.getPiece(square);
-                    if (existingPiece != null) {
-                        board[i][j] = new ChessPiece(existingPiece);
-                    }
-                }
+            copyBoard(other);
+        }
+    }
+
+    private void copyBoard(ChessBoard other) {
+        for (int i = 0; i < 8; i++) {
+            int row = i + 1;
+            for (int j = 0; j < 8; j++) {
+                copyPiece(other, j, row, i);
             }
+        }
+    }
+
+    private void copyPiece(ChessBoard other, int j, int row, int i) {
+        int col = j + 1;
+        ChessPosition square = new ChessPosition(row, col);
+        ChessPiece existingPiece = other.getPiece(square);
+        if (existingPiece != null) {
+            board[i][j] = new ChessPiece(existingPiece);
         }
     }
 
@@ -131,8 +139,8 @@ public class ChessBoard {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) { return true; }
+        if (obj == null || getClass() != obj.getClass()) { return false; }
 
     ChessBoard that = (ChessBoard) obj;
         return Arrays.deepEquals(board, that.board);

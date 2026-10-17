@@ -114,6 +114,22 @@ public class ChessGame {
         passTurn();
     }
 
+
+    private ChessPosition findKingSquare(TeamColor teamColor, int i, int j) {
+        ChessPosition square = new ChessPosition(i, j);
+        ChessPiece occupyingPiece = board.getPiece(square);
+        boolean hasPiece = occupyingPiece != null;
+        boolean isRightColor = false;
+        boolean isKing = false;
+        if (hasPiece) {
+            isRightColor = occupyingPiece.getTeamColor() == teamColor;
+            isKing = occupyingPiece.getPieceType() == ChessPiece.PieceType.KING;
+        }
+        if (hasPiece && isRightColor && isKing) {
+            return square;
+        }
+        return null;
+    }
     /**
      * Determines if the given team is in check
      *
@@ -124,12 +140,8 @@ public class ChessGame {
         ChessPosition kingSquare = null;
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
-                ChessPosition square = new ChessPosition(i, j);
-                ChessPiece occupyingPiece = board.getPiece(square);
-                if (occupyingPiece != null && occupyingPiece.getTeamColor() == teamColor && occupyingPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                    kingSquare = square;
-                    break;
-                }
+                kingSquare = findKingSquare(teamColor, i, j);
+                if (kingSquare != null) { break; }
             }
             if (kingSquare != null) {
                 break; // exit the outer loop if the king has been found already
@@ -140,16 +152,19 @@ public class ChessGame {
         }
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
-                ChessPosition square = new ChessPosition(i, j);
-                ChessPiece occupyingPiece = board.getPiece(square);
-                if (occupyingPiece != null && occupyingPiece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> pieceMoves = occupyingPiece.pieceMoves(board, square);
-                    for (ChessMove move : pieceMoves) {
-                        if (move.getEndPosition().equals(kingSquare)) {
-                            return true;
-                        }
-                    }
-                }
+                if (isCheckedFromSquare(teamColor, i, j, kingSquare)) { return true; }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCheckedFromSquare(TeamColor teamColor, int i, int j, ChessPosition kingSquare) {
+        ChessPosition square = new ChessPosition(i, j);
+        ChessPiece occupyingPiece = board.getPiece(square);
+        if (occupyingPiece != null && occupyingPiece.getTeamColor() != teamColor) {
+            Collection<ChessMove> pieceMoves = occupyingPiece.pieceMoves(board, square);
+            for (ChessMove move : pieceMoves) {
+                if (move.getEndPosition().equals(kingSquare)) { return true; }
             }
         }
         return false;
@@ -167,9 +182,7 @@ public class ChessGame {
                 ChessPiece occupyingPiece = board.getPiece(square);
                 if (occupyingPiece != null && occupyingPiece.getTeamColor() == teamColor) {
                     Collection<ChessMove> possibleMoves = validMoves(square);
-                    if (possibleMoves != null && !possibleMoves.isEmpty()) {
-                        return true; // Return false if at least one legal move is found
-                    }
+                    if (possibleMoves != null && !possibleMoves.isEmpty()) { return true; }
                 }
             }
         }
