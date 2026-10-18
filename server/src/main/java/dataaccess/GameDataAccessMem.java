@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameDataAccessMem implements GameDataAccess {
-   Map<Integer, GameData> games;
+   static Map<Integer, GameData> games;
 
    public GameDataAccessMem() {
        games = new HashMap<>();
@@ -24,5 +24,9 @@ public class GameDataAccessMem implements GameDataAccess {
     public Collection<GameData> getGames() {
         // Get a list of all games
         return null;
+    }
+
+    public GameData getGame(int id) {
+       return null;
     }
 }

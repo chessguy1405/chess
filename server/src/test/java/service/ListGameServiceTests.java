@@ -7,9 +7,17 @@ import dataaccess.*;
 
 import java.util.Collection;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ListGameServiceTests {
     GameDataAccess gamesAccess = new GameDataAccessMem();
+    UserDataAccess usersAccess = new UserDataAccessMem();
+    AuthData auth1;
 
+    @BeforeAll
+    public void init() {
+        UserData user1 = new UserData("test", "test", "test");
+        auth1 = new AuthData("testing", "test");
+    }
 
     @Test
     public void testListWhenEmpty() {
@@ -29,8 +37,9 @@ public class ListGameServiceTests {
     }
 
     private void checkSize(int expected) {
-        Collection<GameData> gamesList = Assertions.assertDoesNotThrow(() -> gamesAccess.getGames());
-        assert (gamesList.size() == expected);
+        ListGameRequest request = new ListGameRequest(auth1.authToken());
+        ListGameResult games = Assertions.assertDoesNotThrow(() -> ListGameService.listGames(request));
+        assert (games.gameList().size() == expected);
     }
 
     private void addGames(int gameCount) {

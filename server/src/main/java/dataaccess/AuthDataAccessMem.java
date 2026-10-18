@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AuthDataAccessMem implements AuthDataAccess {
-    Map<String, AuthData> tokens;
+    static Map<String, AuthData> tokens;
 
     public AuthDataAccessMem() {
         tokens = new HashMap<>();

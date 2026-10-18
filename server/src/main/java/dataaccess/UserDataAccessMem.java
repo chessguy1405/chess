@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class UserDataAccessMem implements UserDataAccess {
 
-    Map<String, UserData> users;
+    static Map<String, UserData> users;
 
     public UserDataAccessMem() {
         users = new HashMap<>();
