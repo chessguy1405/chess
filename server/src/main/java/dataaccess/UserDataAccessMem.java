@@ -23,4 +23,8 @@ public class UserDataAccessMem implements UserDataAccess {
         if (users.isEmpty()) { return null; }
         return(users.values());
     }
+
+    public UserData getUser(String username) {
+        return(users.get(username));
+    }
 }

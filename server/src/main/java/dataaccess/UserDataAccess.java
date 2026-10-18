@@ -8,4 +8,5 @@ public interface UserDataAccess {
     void clearData();
     Collection<UserData> getUsers();
     void newUser(UserData userData);
+    UserData getUser(String username);
 }

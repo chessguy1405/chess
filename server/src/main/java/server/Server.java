@@ -5,6 +5,7 @@ import io.javalin.http.Context;
 import com.google.gson.Gson;
 import java.util.Map;
 import model.*;
+import org.eclipse.jetty.server.Authentication;
 import service.*;
 
 public class Server {
@@ -98,6 +99,7 @@ public class Server {
         context.json(serverErrorJson);
     }
     private void registerHandler(Context context) {
+        String usernameTakenJson = serializer.toJson(Map.of("message", "Error: username already taken"));
         try {
             String body = context.body();
             var bodyJson = serializer.fromJson(body, Map.class);
@@ -105,15 +107,19 @@ public class Server {
             String password = bodyJson.get("password").toString();
             String email = bodyJson.get("email").toString();
             UserData registerData = new UserData(username, password, email);
-            RegisterService.register(registerData);
+            LoginResult result = RegisterService.register(registerData);
+            String resultJson = serializer.toJson(result);
+            context.status(200);
+            context.json(resultJson);
+        }
+        catch (UserExistsException e) {
+            context.status(503);
+            context.json(usernameTakenJson);
         }
         catch (Exception e) {
             context.status(400);
             context.json(badRequestJson);
             return;
         }
-
-        context.status(501);
-        context.json(notImplementedJson);
     }
 }
