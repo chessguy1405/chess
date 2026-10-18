@@ -84,14 +84,10 @@ public class Server {
             return;
         }
         try {
-            LogoutRequest request = new LogoutRequest(token);
-            LogoutService.logout(request);
+            ListGameRequest request = new ListGameRequest(token);
+            ListGameResult result = ListGameService.listGames(request);
             context.status(200);
             context.json(emptyJson);
-        }
-        catch (DoesNotExistException e) {
-            context.status(401);
-            context.json(unauthorizedJson);
         }
         catch (Exception e) {
             context.status(500);
@@ -104,9 +100,21 @@ public class Server {
         if (token == null || token.isEmpty()) {
             context.status(401);
             context.json(unauthorizedJson);
-        } else {
-            context.status(501);
-            context.json(notImplementedJson);
+            return;
+        }
+        try {
+            LogoutRequest request = new LogoutRequest(token);
+            LogoutService.logout(request);
+            context.status(200);
+            context.json(emptyJson);
+        }
+        catch (DoesNotExistException e) {
+            context.status(401);
+            context.json(unauthorizedJson);
+        }
+        catch (Exception e) {
+            context.status(500);
+            context.json(serverErrorJson);
         }
     }
 
@@ -158,12 +166,10 @@ public class Server {
         catch (NullPointerException e) {
             context.status(400);
             context.json(badRequestJson);
-            return;
         }
         catch (Exception e) {
             context.status(500);
             context.json(serverErrorJson);
-            return;
         }
     }
 }
