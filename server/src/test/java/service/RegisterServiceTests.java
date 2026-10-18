@@ -22,14 +22,14 @@ public class RegisterServiceTests {
     @Test
     public void testNewUserWhenEmpty() {
         LoginResult login = Assertions.assertDoesNotThrow(() -> RegisterService.register(user1));
-        assert(login.username().equals("user"));
+        Assertions.assertEquals("user", login.username());
     }
 
     @Test
     public void testNewUserWhenNotEmpty() {
         LoginResult login1 = RegisterService.register(user1);
         LoginResult login2 = Assertions.assertDoesNotThrow(() -> RegisterService.register(user3));
-        assert(login2.username().equals("username"));
+        Assertions.assertEquals("username", login2.username());
     }
 
     @Test

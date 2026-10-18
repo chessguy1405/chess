@@ -80,8 +80,8 @@ public class ClearDataServiceTests {
         Assertions.assertDoesNotThrow(ClearDataService::clearAllData);
         Collection<GameData> gameList = Assertions.assertDoesNotThrow(() -> gamesAccess.getGames());
         Collection<UserData> userList = Assertions.assertDoesNotThrow(() -> usersAccess.getUsers());
-        assert(gameList == null);
-        assert(userList == null);
+        Assertions.assertNull(gameList);
+        Assertions.assertNull(userList);
     }
 
     private void addGames(int gameCount) {

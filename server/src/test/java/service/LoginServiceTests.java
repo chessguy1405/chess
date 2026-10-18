@@ -6,8 +6,8 @@ import dataaccess.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LoginServiceTests {
-    UserDataAccess usersAccess;
-    AuthDataAccess authAccess;
+    UserDataAccess usersAccess = new UserDataAccessMem();
+    AuthDataAccess authAccess = new AuthDataAccessMem();
 
     UserData user1 = new UserData("test", "test", "test");
     AuthData auth1;

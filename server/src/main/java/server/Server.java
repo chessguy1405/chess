@@ -39,10 +39,19 @@ public class Server {
     private final String serverErrorJson = serializer.toJson(Map.of("message", "Error: Internal Server Error"));
     private final String badRequestJson = serializer.toJson(Map.of("message", "Error: bad request"));
     private final String notImplementedJson = serializer.toJson(Map.of("message", "Not Implemented"));
+    private final String emptyJson = serializer.toJson(Map.of());
 
     private void clearDataHandler(Context context) {
-        context.status(501);
-        context.json(notImplementedJson);
+        try {
+            ClearDataService.clearAllData();
+            context.status(200);
+            context.json(emptyJson);
+        }
+        catch(Exception e) {
+            context.status(500);
+            context.json(serverErrorJson);
+        }
+
     }
     private void joinGameHandler(Context context) {
         String token = context.header("authToken");

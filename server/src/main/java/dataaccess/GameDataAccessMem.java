@@ -18,10 +18,11 @@ public class GameDataAccessMem implements GameDataAccess {
     }
 
     public Collection<GameData> getGames() {
+        if (games.isEmpty()) { return null; }
         return(games.values());
     }
 
     public GameData getGame(int id) {
-       return(games.get(id));
+        return(games.get(id));
     }
 }

@@ -20,6 +20,7 @@ public class UserDataAccessMem implements UserDataAccess {
     }
 
     public Collection<UserData> getUsers() {
+        if (users.isEmpty()) { return null; }
         return(users.values());
     }
 }

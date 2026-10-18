@@ -36,6 +36,6 @@ public class CreateGameServiceTests {
 
     private void countGames(int expected) {
         Collection<GameData> gameList = gamesAccess.getGames();
-        assert(gameList.size() == expected);
+        Assertions.assertEquals(expected, gameList.size());
     }
 }
