@@ -9,22 +9,17 @@ import java.util.Map;
 
 public class UserDataAccessMem implements UserDataAccess {
 
-    static Map<String, UserData> users;
+    static Map<String, UserData> users = new HashMap<>();
 
-    public UserDataAccessMem() {
+    public void clearData() {
         users = new HashMap<>();
     }
 
-    public void clearData() {
-        // Removes all user data from in-memory storage
-    }
-
     public void newUser(UserData userData) {
-        // Create a new game
+        users.put(userData.username(), userData);
     }
 
     public Collection<UserData> getUsers() {
-        // Get a list of all users
-        return null;
+        return(users.values());
     }
 }

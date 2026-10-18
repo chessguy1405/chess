@@ -7,26 +7,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameDataAccessMem implements GameDataAccess {
-   static Map<Integer, GameData> games;
-
-   public GameDataAccessMem() {
-       games = new HashMap<>();
-   }
+   static Map<Integer, GameData> games = new HashMap<>();
 
     public void clearData() {
-        // Clear all game data from in-memory storage
+        games = new HashMap<>();
     }
 
     public void newGame(GameData gameData) {
-        // Create a new game
+        games.put(gameData.gameID(), gameData);
     }
 
     public Collection<GameData> getGames() {
-        // Get a list of all games
-        return null;
+        return(games.values());
     }
 
     public GameData getGame(int id) {
-       return null;
+       return(games.get(id));
     }
 }
