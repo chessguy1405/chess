@@ -18,6 +18,6 @@ public class RegisterService {
         if (existingUser != null) { throw new UserExistsException("User already exists"); }
         userAccess.newUser(newUser);
         AuthData auth = authAccess.newAuth(newUser.username());
-        return(new LoginResult(auth.authToken(), auth.username()));
+        return(new LoginResult(auth.username(), auth.authToken()));
     }
 }

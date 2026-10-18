@@ -15,8 +15,6 @@ public class LoginServiceTests {
     @BeforeAll
     public void init() {
         usersAccess.newUser(user1);
-        auth1 = authAccess.getAuth("test");
-        authAccess.removeAuth(auth1);
     }
 
     @BeforeEach

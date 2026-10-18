@@ -54,6 +54,7 @@ public class Server {
         }
 
     }
+
     private void joinGameHandler(Context context) {
         String token = context.header("authToken");
         if (token == null || token.isEmpty()) {
@@ -64,6 +65,7 @@ public class Server {
             context.json(notImplementedJson);
         }
     }
+
     private void newGameHandler(Context context) {
         String token = context.header("authToken");
         if (token == null || token.isEmpty()) {
@@ -84,6 +86,7 @@ public class Server {
             context.json(notImplementedJson);
         }
     }
+
     private void logoutHandler(Context context) {
         String token = context.header("authToken");
         if (token == null || token.isEmpty()) {
@@ -94,10 +97,34 @@ public class Server {
             context.json(notImplementedJson);
         }
     }
+
     private void loginHandler(Context context) {
-        context.status(500);
-        context.json(serverErrorJson);
+        String invalidLoginJson = serializer.toJson(Map.of("message", "Error: unauthorized"));
+        try {
+            String body = context.body();
+            var bodyJson = serializer.fromJson(body, Map.class);
+            String username = bodyJson.get("username").toString();
+            String password = bodyJson.get("password").toString();
+            LoginRequest request = new LoginRequest(username, password);
+            LoginResult result = LoginService.login(request);
+            String resultJson = serializer.toJson(result);
+            context.status(200);
+            context.json(resultJson);
+        }
+        catch (BadPasswordException | DoesNotExistException e) {
+            context.status(401);
+            context.json(invalidLoginJson);
+        }
+        catch (NullPointerException e) {
+            context.status(400);
+            context.json(invalidLoginJson);
+        }
+        catch (Exception e) {
+            context.status(500);
+            context.json(serverErrorJson);
+        }
     }
+
     private void registerHandler(Context context) {
         String usernameTakenJson = serializer.toJson(Map.of("message", "Error: username already taken"));
         try {
@@ -113,12 +140,17 @@ public class Server {
             context.json(resultJson);
         }
         catch (UserExistsException e) {
-            context.status(503);
+            context.status(403);
             context.json(usernameTakenJson);
         }
-        catch (Exception e) {
+        catch (NullPointerException e) {
             context.status(400);
             context.json(badRequestJson);
+            return;
+        }
+        catch (Exception e) {
+            context.status(500);
+            context.json(serverErrorJson);
             return;
         }
     }
