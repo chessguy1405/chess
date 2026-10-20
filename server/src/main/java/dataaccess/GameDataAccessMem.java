@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class GameDataAccessMem implements GameDataAccess {
    private static Map<Integer, GameData> games = new HashMap<>();
-   private static int maxId = 0;
+   private static int maxId = 1;
 
     public void clearData() {
         games = new HashMap<>();

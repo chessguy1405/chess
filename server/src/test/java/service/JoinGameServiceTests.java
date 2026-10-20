@@ -71,4 +71,11 @@ public class JoinGameServiceTests {
         assert(game.whiteUsername().equals("test"));
         assert(game.blackUsername().equals("exam"));
     }
+
+    @Test
+    public void testWithInvalidGame() {
+        JoinGameRequest request = new JoinGameRequest(auth1.authToken(), ChessGame.TeamColor.WHITE, 6789);
+        Assertions.assertThrows(BadGameException.class, () -> JoinGameService.joinGame(request));
+    }
+
 }

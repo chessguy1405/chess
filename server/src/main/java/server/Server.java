@@ -103,7 +103,7 @@ public class Server {
         String token = context.header("authorization");
         if (token == null || token.isEmpty()) {
             context.status(401);
-            context.json(unauthorizedJson);
+            context.json(noAuthJson);
         } else {
             try {
                 String body = context.body();
@@ -134,7 +134,7 @@ public class Server {
         String token = context.header("authorization");
         if (token == null || token.isEmpty()) {
             context.status(401);
-            context.json(unauthorizedJson);
+            context.json(noAuthJson);
             return;
         }
         try {
@@ -158,7 +158,7 @@ public class Server {
         String token = context.header("authorization");
         if (token == null || token.isEmpty()) {
             context.status(401);
-            context.json(unauthorizedJson);
+            context.json(noAuthJson);
             return;
         }
         try {
