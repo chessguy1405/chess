@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
@@ -61,8 +62,37 @@ public class Server {
             context.status(401);
             context.json(unauthorizedJson);
         } else {
-            context.status(501);
-            context.json(notImplementedJson);
+            try {
+                String body = context.body();
+                var bodyJson = serializer.fromJson(body, Map.class);
+                String color = bodyJson.get("playerColor").toString();
+                ChessGame.TeamColor pieceColor;
+                if (color.equals("WHITE")) { pieceColor = ChessGame.TeamColor.WHITE; }
+                else if (color.equals("BLACK")) {pieceColor = ChessGame.TeamColor.BLACK; }
+                else { throw new BadColorException("Invalid color, must be one of [WHITE, BLACK]"); }
+                int gameId = Integer.parseInt(bodyJson.get("gameID").toString());
+                JoinGameRequest request = new JoinGameRequest(token, pieceColor, gameId);
+                JoinGameService.joinGame(request);
+                context.status(200);
+                context.json(emptyJson);
+            }
+            catch (TeamTakenException e) {
+                String alreadyTakenJson = serializer.toJson(Map.of("message", "Error: already taken"));
+                context.status(403);
+                context.json(alreadyTakenJson);
+            }
+            catch (DoesNotExistException e) {
+                context.status(401);
+                context.json(unauthorizedJson);
+            }
+            catch (NullPointerException | BadGameException | BadColorException | NumberFormatException e) {
+                context.status(400);
+                context.json(badRequestJson);
+            }
+            catch (Exception e) {
+                context.status(500);
+                context.json(serverErrorJson);
+            }
         }
     }
 

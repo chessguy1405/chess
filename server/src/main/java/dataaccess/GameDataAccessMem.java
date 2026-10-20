@@ -1,6 +1,8 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
+import service.TeamTakenException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,5 +32,23 @@ public class GameDataAccessMem implements GameDataAccess {
 
     public int nextId() {
         return(maxId);
+    }
+
+    public void joinGame(ChessGame.TeamColor color, String username, int gameId) throws DataAccessException {
+        GameData existingGame = getGame(gameId);
+        String whiteUsername = existingGame.whiteUsername();
+        String blackUsername = existingGame.blackUsername();
+        ChessGame game = existingGame.game();
+        String gameName = existingGame.gameName();
+        if (color.equals(ChessGame.TeamColor.WHITE)) {
+            if (whiteUsername != null) { throw new DataAccessException("White is taken"); }
+            else { whiteUsername = username; }
+        }
+        else if (color.equals(ChessGame.TeamColor.BLACK)) {
+            if (blackUsername != null) { throw new DataAccessException("Black is taken"); }
+            else { blackUsername = username; }
+        }
+        GameData gameData = new GameData(gameId, whiteUsername, blackUsername, gameName, game);
+        games.put(gameId, gameData);
     }
 }

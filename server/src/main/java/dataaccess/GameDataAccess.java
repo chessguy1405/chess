@@ -1,7 +1,7 @@
 package dataaccess;
 
 import model.GameData;
-
+import chess.ChessGame;
 import java.util.Collection;
 
 public interface GameDataAccess {
@@ -10,4 +10,5 @@ public interface GameDataAccess {
     Collection<GameData> getGames();
     GameData getGame(int id);
     int nextId();
+    void joinGame(ChessGame.TeamColor color, String username, int gameId) throws DataAccessException;
 }
