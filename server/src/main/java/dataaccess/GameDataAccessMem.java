@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameDataAccessMem implements GameDataAccess {
-   static Map<Integer, GameData> games = new HashMap<>();
+   private static Map<Integer, GameData> games = new HashMap<>();
+   private static int maxId = 0;
 
     public void clearData() {
         games = new HashMap<>();
@@ -15,6 +16,7 @@ public class GameDataAccessMem implements GameDataAccess {
 
     public void newGame(GameData gameData) {
         games.put(gameData.gameID(), gameData);
+        maxId++;
     }
 
     public Collection<GameData> getGames() {
@@ -24,5 +26,9 @@ public class GameDataAccessMem implements GameDataAccess {
 
     public GameData getGame(int id) {
         return(games.get(id));
+    }
+
+    public int nextId() {
+        return(maxId);
     }
 }

@@ -13,6 +13,7 @@ public class AuthDataAccessMem implements AuthDataAccess {
 
     public void clearData() {
         tokens = new HashMap<>();
+        users = new HashMap<>();
     }
 
     public AuthData newAuth(String username) {

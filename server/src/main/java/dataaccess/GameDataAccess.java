@@ -9,4 +9,5 @@ public interface GameDataAccess {
     void newGame(GameData gameData);
     Collection<GameData> getGames();
     GameData getGame(int id);
+    int nextId();
 }

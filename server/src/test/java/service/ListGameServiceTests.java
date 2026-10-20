@@ -11,12 +11,19 @@ import java.util.Collection;
 public class ListGameServiceTests {
     GameDataAccess gamesAccess = new GameDataAccessMem();
     UserDataAccess usersAccess = new UserDataAccessMem();
+    AuthDataAccess authAccess = new AuthDataAccessMem();
     AuthData auth1;
 
     @BeforeAll
     public void init() {
         UserData user1 = new UserData("test", "test", "test");
-        auth1 = new AuthData("testing", "test");
+        usersAccess.newUser(user1);
+        auth1 = authAccess.newAuth("test");
+    }
+
+    @BeforeEach
+    public void cleanup() {
+        gamesAccess.clearData();
     }
 
     @Test
@@ -39,7 +46,7 @@ public class ListGameServiceTests {
     private void checkSize(int expected) {
         ListGameRequest request = new ListGameRequest(auth1.authToken());
         ListGameResult games = Assertions.assertDoesNotThrow(() -> ListGameService.listGames(request));
-        assert (games.gameList().size() == expected);
+        assert (games.games().size() == expected);
     }
 
     private void addGames(int gameCount) {

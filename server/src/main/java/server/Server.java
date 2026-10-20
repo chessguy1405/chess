@@ -56,7 +56,7 @@ public class Server {
     }
 
     private void joinGameHandler(Context context) {
-        String token = context.header("authToken");
+        String token = context.header("authorization");
         if (token == null || token.isEmpty()) {
             context.status(401);
             context.json(unauthorizedJson);
@@ -67,17 +67,38 @@ public class Server {
     }
 
     private void newGameHandler(Context context) {
-        String token = context.header("authToken");
+        String token = context.header("authorization");
         if (token == null || token.isEmpty()) {
             context.status(401);
             context.json(unauthorizedJson);
         } else {
-            context.status(501);
-            context.json(notImplementedJson);
+            try {
+                String body = context.body();
+                var bodyJson = serializer.fromJson(body, Map.class);
+                String gameName = bodyJson.get("gameName").toString();
+                NewGameRequest request = new NewGameRequest(token, gameName);
+                NewGameResult result = CreateGameService.newGame(request);
+                int gameId = result.gameID();
+                String responseJson = serializer.toJson(Map.of("gameID", gameId));
+                context.status(200);
+                context.json(responseJson);
+            }
+            catch (NullPointerException e) {
+                context.status(400);
+                context.json(badRequestJson);
+            }
+            catch (DoesNotExistException e) {
+                context.status(401);
+                context.json(unauthorizedJson);
+            }
+            catch (Exception e) {
+                context.status(500);
+                context.json(serverErrorJson);
+            }
         }
     }
     private void listGamesHandler(Context context) {
-        String token = context.header("authToken");
+        String token = context.header("authorization");
         if (token == null || token.isEmpty()) {
             context.status(401);
             context.json(unauthorizedJson);
@@ -86,8 +107,13 @@ public class Server {
         try {
             ListGameRequest request = new ListGameRequest(token);
             ListGameResult result = ListGameService.listGames(request);
+            String gameListJson = serializer.toJson(result);
             context.status(200);
-            context.json(emptyJson);
+            context.json(gameListJson);
+        }
+        catch (DoesNotExistException e) {
+            context.status(401);
+            context.json(unauthorizedJson);
         }
         catch (Exception e) {
             context.status(500);
@@ -96,7 +122,7 @@ public class Server {
     }
 
     private void logoutHandler(Context context) {
-        String token = context.header("authToken");
+        String token = context.header("authorization");
         if (token == null || token.isEmpty()) {
             context.status(401);
             context.json(unauthorizedJson);

@@ -16,6 +16,12 @@ public class ListGameService {
         AuthData auth = authAccess.getAuth(request.authToken());
         if (auth == null) { throw new DoesNotExistException("AuthToken is not valid"); }
         Collection<GameData> gameList = gameAccess.getGames();
-        return (new ListGameResult(gameList));
+        ListGameResult result;
+        if (gameList == null) {
+            result = new ListGameResult(new ArrayList<>());
+        } else {
+            result = new ListGameResult(gameList);
+        }
+        return(result);
     }
 }

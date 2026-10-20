@@ -6,9 +6,20 @@ import model.*;
 
 import java.util.Collection;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CreateGameServiceTests {
 
     GameDataAccess gamesAccess = new GameDataAccessMem();
+    AuthDataAccess authAccess = new AuthDataAccessMem();
+    UserDataAccess userAccess = new UserDataAccessMem();
+    UserData user = new UserData("test", "test", "test");
+    AuthData auth;
+
+    @BeforeAll
+    public void init() {
+        userAccess.newUser(user);
+        auth = authAccess.newAuth("test");
+    }
 
     @BeforeEach
     public void clearGames() {
@@ -31,7 +42,7 @@ public class CreateGameServiceTests {
     }
 
     private NewGameRequest makeGame() {
-        return new NewGameRequest("test_token", "test");
+        return new NewGameRequest(auth.authToken(), "test");
     }
 
     private void countGames(int expected) {

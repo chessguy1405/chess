@@ -52,6 +52,6 @@ public class LoginServiceTests {
         LoginResult auth2 = Assertions.assertDoesNotThrow(() -> LoginService.login(request));
         LoginResult auth3 = Assertions.assertDoesNotThrow(() -> LoginService.login(request));
         assert(authAccess.getAuth("test") != null);
-        assert(auth2.equals(auth3));
+        Assertions.assertNotEquals(auth2.authToken(), auth3.authToken());
     }
 }
