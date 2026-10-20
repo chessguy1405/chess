@@ -42,6 +42,7 @@ public class Server {
     private final String badRequestJson = serializer.toJson(Map.of("message", "Error: bad request"));
     private final String notImplementedJson = serializer.toJson(Map.of("message", "Not Implemented"));
     private final String emptyJson = serializer.toJson(Map.of());
+    private final String noAuthJson = serializer.toJson(Map.of("message", "Error: No authToken"));
 
     private void clearDataHandler(Context context) {
         try {
@@ -60,7 +61,7 @@ public class Server {
         String token = context.header("authorization");
         if (token == null || token.isEmpty()) {
             context.status(401);
-            context.json(unauthorizedJson);
+            context.json(noAuthJson);
         } else {
             try {
                 String body = context.body();
@@ -70,7 +71,9 @@ public class Server {
                 if (color.equals("WHITE")) { pieceColor = ChessGame.TeamColor.WHITE; }
                 else if (color.equals("BLACK")) {pieceColor = ChessGame.TeamColor.BLACK; }
                 else { throw new BadColorException("Invalid color, must be one of [WHITE, BLACK]"); }
-                int gameId = Integer.parseInt(bodyJson.get("gameID").toString());
+                String gameIdString = bodyJson.get("gameID").toString();
+                String gameIdNumString = gameIdString.substring(0, gameIdString.length() - 2);
+                int gameId = Integer.parseInt(gameIdNumString);
                 JoinGameRequest request = new JoinGameRequest(token, pieceColor, gameId);
                 JoinGameService.joinGame(request);
                 context.status(200);

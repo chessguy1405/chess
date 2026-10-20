@@ -34,9 +34,9 @@ public class JoinGameServiceTests {
         gamesAccess.newGame(game2);
         gamesAccess.newGame(game3);
 
-        auth1 = authAccess.newAuth("user1");
-        auth2 = authAccess.newAuth("user2");
-        auth3 = authAccess.newAuth("user3");
+        auth1 = authAccess.newAuth(user1.username());
+        auth2 = authAccess.newAuth(user2.username());
+        auth3 = authAccess.newAuth(user3.username());
     }
 
     @Test
@@ -46,8 +46,8 @@ public class JoinGameServiceTests {
         Assertions.assertDoesNotThrow(() -> JoinGameService.joinGame(request1));
         Assertions.assertDoesNotThrow(() -> JoinGameService.joinGame(request2));
         GameData game = gamesAccess.getGame(0);
-        assert(game.whiteUsername().equals("exam"));
-        assert(game.blackUsername().equals("quiz"));
+        Assertions.assertEquals("exam", game.whiteUsername());
+        Assertions.assertEquals("quiz", game.blackUsername());
     }
 
     @Test
