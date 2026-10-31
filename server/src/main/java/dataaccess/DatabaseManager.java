@@ -74,4 +74,49 @@ public class DatabaseManager {
         var port = Integer.parseInt(props.getProperty("db.port"));
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
+
+    static public void makeGameTable() throws DataAccessException {
+        try (var conn = getConnection();) {
+            var statement = "CREATE TABLE IF NOT EXISTS game ( " +
+                    "id INT PRIMARY KEY NOT NULL," +
+                    "whiteusername VARCHAR(100)," +
+                    "blackusername VARCHAR(100)," +
+                    "gamename VARCHAR(100) UNIQUE NOT NULL," +
+                    "game JSON NOT NULL)";
+            var preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.executeUpdate();
+        }
+        catch(SQLException e) {
+            throw(new DataAccessException("Unable to connect to the database"));
+        }
+    }
+
+    static public void makeUserTable() throws DataAccessException {
+        try (var conn = getConnection();) {
+            var statement = "CREATE TABLE IF NOT EXISTS user ( " +
+                    "id INT AUTO_INCREMENT PRIMARY KEY NOT NULL," +
+                    "username VARCHAR(100) UNIQUE NOT NULL," +
+                    "email VARCHAR(100) UNIQUE NOT NULL," +
+                    "password VARCHAR(255) NOT NULL)";
+            var preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.executeUpdate();
+        }
+        catch(SQLException e) {
+            throw(new DataAccessException("Unable to connect to the database"));
+        }
+    }
+
+    static public void makeAuthTable() throws DataAccessException {
+        try (var conn = getConnection();) {
+            var statement = "CREATE TABLE IF NOT EXISTS auth ( " +
+                    "id INT AUTO_INCREMENT PRIMARY KEY NOT NULL," +
+                    "authtoken VARCHAR(255) UNIQUE NOT NULL," +
+                    "username VARCHAR(100) NOT NULL)";
+            var preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.executeUpdate();
+        }
+        catch(SQLException e) {
+            throw(new DataAccessException("Unable to connect to the database"));
+        }
+    }
 }

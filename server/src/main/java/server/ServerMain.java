@@ -13,6 +13,9 @@ public class ServerMain {
 
         try {
             DatabaseManager.createDatabase();
+            DatabaseManager.makeAuthTable();
+            DatabaseManager.makeGameTable();
+            DatabaseManager.makeUserTable();
         }
         catch(DataAccessException e) {
             throw new RuntimeException("Uh Oh! Something went wrong!");
