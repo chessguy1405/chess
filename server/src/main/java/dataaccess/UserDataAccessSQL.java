@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 public class UserDataAccessSQL implements UserDataAccess {
+    UserDataAccessSQL() throws DataAccessException {
+        makeUserTable();
+    }
     public void clearData() {}
     public Collection<UserData> getUsers() {return null;}
     public void newUser(UserData userData) {}

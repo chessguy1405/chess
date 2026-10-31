@@ -1,5 +1,8 @@
 package server;
 
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+
 public class ServerMain {
     public static void main(String[] args) {
         var port = 8080;
@@ -7,5 +10,12 @@ public class ServerMain {
         server.run(port);
 
         System.out.println("♕ 240 Chess Server running on port " + port);
+
+        try {
+            DatabaseManager.createDatabase();
+        }
+        catch(DataAccessException e) {
+            throw new RuntimeException("Uh Oh! Something went wrong!");
+        }
     }
 }

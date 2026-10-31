@@ -1,6 +1,8 @@
 package server;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;

@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 public class GameDataAccessSQL implements GameDataAccess {
+    GameDataAccessSQL() throws DataAccessException {
+        makeGameTable();
+    }
     public void clearData() {}
     public void newGame(GameData gameData) {}
     public Collection<GameData> getGames() {return null;}
