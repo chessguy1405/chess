@@ -17,8 +17,10 @@ public class GameDataAccessMem implements GameDataAccess {
     }
 
     public void newGame(GameData gameData) {
-        games.put(gameData.gameID(), gameData);
-        maxId++;
+        if (getGame(gameData.gameID()) == null) {
+            games.put(gameData.gameID(), gameData);
+            maxId++;
+        }
     }
 
     public Collection<GameData> getGames() {

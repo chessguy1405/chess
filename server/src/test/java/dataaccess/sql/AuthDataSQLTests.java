@@ -4,8 +4,6 @@ import dataaccess.*;
 import org.junit.jupiter.api.*;
 import model.*;
 
-import javax.xml.crypto.Data;
-
 public class AuthDataSQLTests {
 
     AuthDataAccess authAccess = new AuthDataAccessSQL();
