@@ -25,8 +25,13 @@ public class AuthDataSQLTests {
     @BeforeEach
     void cleanup() {
         authAccess.clearData();
-        if (userAccess.getUser("testuser1") == null) {
-            userAccess.newUser(testUser);
+        try {
+            if (userAccess.getUser("testuser1") == null) {
+                userAccess.newUser(testUser);
+            }
+        }
+        catch(DataAccessException e) {
+            throw(new RuntimeException("Failed to connect to database"));
         }
     }
 

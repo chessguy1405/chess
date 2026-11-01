@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDataAccess;
-import dataaccess.AuthDataAccessMem;
-import dataaccess.UserDataAccess;
-import dataaccess.UserDataAccessMem;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import model.LoginResult;
@@ -11,7 +8,7 @@ import model.LoginResult;
 import java.util.UUID;
 
 public class RegisterService {
-    public static LoginResult register(UserData newUser) throws UserExistsException {
+    public static LoginResult register(UserData newUser) throws UserExistsException, DataAccessException {
         UserDataAccess userAccess = new UserDataAccessMem();
         AuthDataAccess authAccess = new AuthDataAccessMem();
         UserData existingUser = userAccess.getUser(newUser.username());

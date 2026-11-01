@@ -31,12 +31,17 @@ public class GameDataSQLTests {
 
     @BeforeEach
     void cleanup() {
-        gameAccess.clearData();
-        if (userAccess.getUser("testuser1") == null) {
-            userAccess.newUser(testUser1);
+        try {
+            gameAccess.clearData();
+            if (userAccess.getUser("testuser1") == null) {
+                userAccess.newUser(testUser1);
+            }
+            if (userAccess.getUser("testuser2") == null) {
+                userAccess.newUser(testUser2);
+            }
         }
-        if (userAccess.getUser("testuser2") == null) {
-            userAccess.newUser(testUser2);
+        catch(DataAccessException e) {
+            throw(new RuntimeException("Failed to connect to database"));
         }
     }
 
