@@ -14,8 +14,13 @@ public class LogoutServiceTests {
 
     @BeforeAll
     public void init() {
-        usersAccess.newUser(user1);
-        authAccess.newAuth("test");
+        try {
+            usersAccess.newUser(user1);
+            authAccess.newAuth("test");
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }
     }
 
     @BeforeEach

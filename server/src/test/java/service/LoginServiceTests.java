@@ -14,7 +14,12 @@ public class LoginServiceTests {
 
     @BeforeAll
     public void init() {
-        usersAccess.newUser(user1);
+        try {
+            usersAccess.newUser(user1);
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }
     }
 
     @BeforeEach

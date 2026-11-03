@@ -16,27 +16,32 @@ public class JoinGameServiceTests {
 
     @BeforeAll
     public void init() {
-        gamesAccess = new GameDataAccessMem();
-        UserDataAccess usersAccess = new UserDataAccessMem();
-        AuthDataAccess authAccess = new AuthDataAccessMem();
-        UserData user1 = new UserData("test", "test", "test");
-        UserData user2 = new UserData("exam", "exam", "exam");
-        UserData user3 = new UserData("quiz", "quiz", "quiz");
-        GameData game1 = new GameData(0, null, null, "Game 1", new ChessGame());
-        GameData game2 = new GameData(1, "test", "quiz", "Game 2", new ChessGame());
-        GameData game3 = new GameData(2, "test", "exam", "Game 3", new ChessGame());
+        try {
+            gamesAccess = new GameDataAccessMem();
+            UserDataAccess usersAccess = new UserDataAccessMem();
+            AuthDataAccess authAccess = new AuthDataAccessMem();
+            UserData user1 = new UserData("test", "test", "test");
+            UserData user2 = new UserData("exam", "exam", "exam");
+            UserData user3 = new UserData("quiz", "quiz", "quiz");
+            GameData game1 = new GameData(0, null, null, "Game 1", new ChessGame());
+            GameData game2 = new GameData(1, "test", "quiz", "Game 2", new ChessGame());
+            GameData game3 = new GameData(2, "test", "exam", "Game 3", new ChessGame());
 
-        usersAccess.newUser(user1);
-        usersAccess.newUser(user2);
-        usersAccess.newUser(user3);
+            usersAccess.newUser(user1);
+            usersAccess.newUser(user2);
+            usersAccess.newUser(user3);
 
-        gamesAccess.newGame(game1);
-        gamesAccess.newGame(game2);
-        gamesAccess.newGame(game3);
+            gamesAccess.newGame(game1);
+            gamesAccess.newGame(game2);
+            gamesAccess.newGame(game3);
 
-        auth1 = authAccess.newAuth(user1.username());
-        auth2 = authAccess.newAuth(user2.username());
-        auth3 = authAccess.newAuth(user3.username());
+            auth1 = authAccess.newAuth(user1.username());
+            auth2 = authAccess.newAuth(user2.username());
+            auth3 = authAccess.newAuth(user3.username());
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }
     }
 
     @Test

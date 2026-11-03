@@ -16,9 +16,14 @@ public class ListGameServiceTests {
 
     @BeforeAll
     public void init() {
-        UserData user1 = new UserData("test", "test", "test");
-        usersAccess.newUser(user1);
-        auth1 = authAccess.newAuth("test");
+        try {
+            UserData user1 = new UserData("test", "test", "test");
+            usersAccess.newUser(user1);
+            auth1 = authAccess.newAuth("test");
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }
     }
 
     @BeforeEach

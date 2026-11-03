@@ -22,7 +22,12 @@ public class UserDataSQLTests {
 
     @BeforeEach
     void cleanup() {
-        userAccess.clearData();
+        try {
+            userAccess.clearData();
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }
     }
 
 
@@ -31,13 +36,13 @@ public class UserDataSQLTests {
         Assertions.assertDoesNotThrow(()->userAccess.clearData());
         for (int i = 0; i < 20; i++) {
             String username = String.valueOf(i);
-            UserData exampleUser = new UserData(username, "password", "user@example.com");
+            UserData exampleUser = new UserData(username, "password", username + "@example.com");
             Assertions.assertDoesNotThrow(()->userAccess.newUser(exampleUser));
         }
         Assertions.assertDoesNotThrow(()->userAccess.clearData());
         for (int i = 0; i < 20; i++) {
             String username = String.valueOf(i);
-            UserData exampleUser = new UserData(username, "password", "user@example.com");
+            UserData exampleUser = new UserData(username, "password", username + "@example.com");
             var returnedUser = Assertions.assertDoesNotThrow(()->userAccess.getUser(username));
             Assertions.assertNull(returnedUser);
         }

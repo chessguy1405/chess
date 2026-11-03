@@ -17,8 +17,13 @@ public class CreateGameServiceTests {
 
     @BeforeAll
     public void init() {
-        userAccess.newUser(user);
-        auth = authAccess.newAuth("test");
+        try {
+            userAccess.newUser(user);
+            auth = authAccess.newAuth("test");
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }
     }
 
     @BeforeEach

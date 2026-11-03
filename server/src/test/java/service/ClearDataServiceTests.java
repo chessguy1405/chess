@@ -15,8 +15,13 @@ public class ClearDataServiceTests {
 
     @BeforeEach
     public void cleanupData() {
-        gamesAccess.clearData();
-        usersAccess.clearData();
+        try {
+            gamesAccess.clearData();
+            usersAccess.clearData();
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }
     }
 
     @Test
@@ -97,7 +102,7 @@ public class ClearDataServiceTests {
         int i = 0;
         while (i < userCount) {
             String userName = String.valueOf(i);
-            usersAccess.newUser(new UserData(userName, userName, userName));
+            Assertions.assertDoesNotThrow(() -> usersAccess.newUser(new UserData(userName, userName, userName)));
             i++;
         }
     }

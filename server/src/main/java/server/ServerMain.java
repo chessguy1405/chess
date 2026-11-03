@@ -18,7 +18,7 @@ public class ServerMain {
             DatabaseManager.makeUserTable();
         }
         catch(DataAccessException e) {
-            throw new RuntimeException("Uh Oh! Something went wrong!");
+            throw new RuntimeException("Something went wrong!");
         }
     }
 }
