@@ -1,6 +1,8 @@
 package server;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
@@ -13,6 +15,17 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
+
+        try {
+            DatabaseManager.createDatabase();
+            DatabaseManager.makeAuthTable();
+            DatabaseManager.makeGameTable();
+            DatabaseManager.makeUserTable();
+        }
+        catch(DataAccessException e) {
+            throw new RuntimeException("Something went wrong!");
+        }
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clearDataHandler)
                 .post("/session", this::loginHandler)
