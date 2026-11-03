@@ -51,7 +51,18 @@ public class AuthDataAccessSQL implements AuthDataAccess {
             throw(new DataAccessException("Unable to get auth data"));
         }
     }
-    public void removeAuth(AuthData authData) {}
+    public void removeAuth(AuthData authData) throws DataAccessException {
+        String sql = "DELETE FROM auth WHERE authtoken = ? AND username = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = conn.prepareStatement(sql);
+            statement.setString(1, authData.authToken());
+            statement.setString(2, authData.username());
+            statement.executeUpdate();
+        }
+        catch (SQLException e) {
+            throw(new DataAccessException("Unable to remove auth data"));
+        }
+    }
     public void clearData() throws DataAccessException {
         String sql = "DELETE FROM auth";
         try (var conn = DatabaseManager.getConnection()) {
