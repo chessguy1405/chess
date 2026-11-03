@@ -4,18 +4,21 @@ import org.eclipse.jetty.util.log.Log;
 import org.junit.jupiter.api.*;
 import model.*;
 import dataaccess.*;
+import dataaccess.sql.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LogoutServiceTests {
-    UserDataAccess usersAccess = new UserDataAccessMem();
-    AuthDataAccess authAccess = new AuthDataAccessMem();
+    UserDataAccess usersAccess = new UserDataAccessSQL();
+    AuthDataAccess authAccess = new AuthDataAccessSQL();
 
     UserData user1 = new UserData("test", "test", "test");
 
     @BeforeAll
     public void init() {
         try {
-            usersAccess.newUser(user1);
+            if (usersAccess.getUser("test") == null) {
+                usersAccess.newUser(user1);
+            }
             authAccess.newAuth("test");
         }
         catch (DataAccessException e) {
@@ -40,7 +43,7 @@ public class LogoutServiceTests {
         LogoutRequest request = new LogoutRequest("not a token");
         Assertions.assertThrows(DoesNotExistException.class, () -> LogoutService.logout(request));
         var result = Assertions.assertDoesNotThrow(() -> authAccess.getAuth("test"));
-        Assertions.assertNull(result);
+        Assertions.assertNotNull(result);
     }
 
     @Test
@@ -49,6 +52,6 @@ public class LogoutServiceTests {
         LogoutRequest request = new LogoutRequest(authToken);
         Assertions.assertDoesNotThrow(() -> LogoutService.logout(request));
         var result = Assertions.assertDoesNotThrow(()->authAccess.getAuth("test"));
-        Assertions.assertNotNull(result);
+        Assertions.assertNull(result);
     }
 }

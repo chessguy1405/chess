@@ -5,11 +5,12 @@ import model.*;
 import dataaccess.*;
 
 import java.sql.SQLException;
+import dataaccess.sql.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LoginServiceTests {
-    UserDataAccess usersAccess = new UserDataAccessMem();
-    AuthDataAccess authAccess = new AuthDataAccessMem();
+    UserDataAccess usersAccess = new UserDataAccessSQL();
+    AuthDataAccess authAccess = new AuthDataAccessSQL();
 
     UserData user1 = new UserData("test", "test", "test");
     AuthData auth1;
@@ -46,6 +47,7 @@ public class LoginServiceTests {
 
     @Test
     public void testWrongPassword() {
+        Assertions.assertDoesNotThrow(()->authAccess.clearData());
         LoginRequest request = new LoginRequest("test", "exam");
         Assertions.assertThrows(BadPasswordException.class, () -> LoginService.login(request));
         var result = Assertions.assertDoesNotThrow(() -> authAccess.getAuth("test"));
@@ -57,7 +59,7 @@ public class LoginServiceTests {
         LoginRequest request = new LoginRequest("test", "test");
         Assertions.assertDoesNotThrow(() -> LoginService.login(request));
         var result = Assertions.assertDoesNotThrow(() -> authAccess.getAuth("test"));
-        Assertions.assertNull(result);
+        Assertions.assertNotNull(result);
     }
 
     @Test
@@ -66,7 +68,7 @@ public class LoginServiceTests {
         LoginResult auth2 = Assertions.assertDoesNotThrow(() -> LoginService.login(request));
         LoginResult auth3 = Assertions.assertDoesNotThrow(() -> LoginService.login(request));
         var result = Assertions.assertDoesNotThrow(() -> authAccess.getAuth("test"));
-        Assertions.assertNull(result);
+        Assertions.assertNotNull(result);
         Assertions.assertNotEquals(auth2.authToken(), auth3.authToken());
     }
 }

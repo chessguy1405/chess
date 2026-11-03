@@ -4,11 +4,14 @@ import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import model.*;
 import dataaccess.*;
+import dataaccess.sql.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class JoinGameServiceTests {
 
-    GameDataAccess gamesAccess;
+    GameDataAccess gamesAccess = new GameDataAccessSQL();
+    UserDataAccess usersAccess = new UserDataAccessSQL();
+    AuthDataAccess authAccess = new AuthDataAccessSQL();
 
     AuthData auth1;
     AuthData auth2;
@@ -17,9 +20,6 @@ public class JoinGameServiceTests {
     @BeforeAll
     public void init() {
         try {
-            gamesAccess = new GameDataAccessMem();
-            UserDataAccess usersAccess = new UserDataAccessMem();
-            AuthDataAccess authAccess = new AuthDataAccessMem();
             UserData user1 = new UserData("test", "test", "test");
             UserData user2 = new UserData("exam", "exam", "exam");
             UserData user3 = new UserData("quiz", "quiz", "quiz");
@@ -27,14 +27,17 @@ public class JoinGameServiceTests {
             GameData game2 = new GameData(1, "test", "quiz", "Game 2", new ChessGame());
             GameData game3 = new GameData(2, "test", "exam", "Game 3", new ChessGame());
 
+            usersAccess.clearData();
             usersAccess.newUser(user1);
             usersAccess.newUser(user2);
             usersAccess.newUser(user3);
 
+            gamesAccess.clearData();
             gamesAccess.newGame(game1);
             gamesAccess.newGame(game2);
             gamesAccess.newGame(game3);
 
+            authAccess.clearData();
             auth1 = authAccess.newAuth(user1.username());
             auth2 = authAccess.newAuth(user2.username());
             auth3 = authAccess.newAuth(user3.username());
@@ -73,8 +76,9 @@ public class JoinGameServiceTests {
         Assertions.assertThrows(TeamTakenException.class, () -> JoinGameService.joinGame(request1));
         Assertions.assertThrows(TeamTakenException.class, () -> JoinGameService.joinGame(request2));
         GameData game = Assertions.assertDoesNotThrow(()->gamesAccess.getGame(2));
-        assert(game.whiteUsername().equals("test"));
-        assert(game.blackUsername().equals("exam"));
+        Assertions.assertNotNull(game);
+        Assertions.assertEquals("test", game.whiteUsername());
+        Assertions.assertEquals("exam", game.blackUsername());
     }
 
     @Test

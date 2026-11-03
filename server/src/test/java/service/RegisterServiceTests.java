@@ -1,15 +1,14 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.UserDataAccess;
-import dataaccess.UserDataAccessMem;
+import dataaccess.*;
+import dataaccess.sql.*;
 import org.junit.jupiter.api.*;
 import model.UserData;
 import model.LoginResult;
 
 public class RegisterServiceTests {
 
-    UserDataAccess cleanup = new UserDataAccessMem();
+    UserDataAccess cleanup = new UserDataAccessSQL();
 
     UserData user1 = new UserData("user", "pass", "email");
     UserData user2 = new UserData("user", "pass", "email");

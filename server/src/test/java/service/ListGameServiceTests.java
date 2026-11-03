@@ -6,19 +6,22 @@ import model.*;
 import dataaccess.*;
 
 import java.util.Collection;
+import dataaccess.sql.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ListGameServiceTests {
-    GameDataAccess gamesAccess = new GameDataAccessMem();
-    UserDataAccess usersAccess = new UserDataAccessMem();
-    AuthDataAccess authAccess = new AuthDataAccessMem();
+    GameDataAccess gamesAccess = new GameDataAccessSQL();
+    UserDataAccess usersAccess = new UserDataAccessSQL();
+    AuthDataAccess authAccess = new AuthDataAccessSQL();
     AuthData auth1;
 
     @BeforeAll
     public void init() {
         try {
             UserData user1 = new UserData("test", "test", "test");
-            usersAccess.newUser(user1);
+            if (usersAccess.getUser("test") == null) {
+                usersAccess.newUser(user1);
+            }
             auth1 = authAccess.newAuth("test");
         }
         catch (DataAccessException e) {

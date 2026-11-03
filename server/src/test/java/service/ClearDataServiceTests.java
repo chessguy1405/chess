@@ -4,13 +4,14 @@ import chess.ChessGame;
 import model.*;
 import org.junit.jupiter.api.*;
 import dataaccess.*;
+import dataaccess.sql.*;
 
 import java.util.Collection;
 
 public class ClearDataServiceTests {
 
-    GameDataAccess gamesAccess = new GameDataAccessMem();
-    UserDataAccess usersAccess = new UserDataAccessMem();
+    GameDataAccess gamesAccess = new GameDataAccessSQL();
+    UserDataAccess usersAccess = new UserDataAccessSQL();
 
 
     @BeforeEach

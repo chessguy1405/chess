@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.sql.*;
 import model.AuthData;
 import model.UserData;
 import model.LoginResult;
@@ -9,8 +10,8 @@ import java.util.UUID;
 
 public class RegisterService {
     public static LoginResult register(UserData newUser) throws UserExistsException, DataAccessException {
-        UserDataAccess userAccess = new UserDataAccessMem();
-        AuthDataAccess authAccess = new AuthDataAccessMem();
+        UserDataAccess userAccess = new UserDataAccessSQL();
+        AuthDataAccess authAccess = new AuthDataAccessSQL();
         UserData existingUser = userAccess.getUser(newUser.username());
         if (existingUser != null) { throw new UserExistsException("User already exists"); }
         userAccess.newUser(newUser);

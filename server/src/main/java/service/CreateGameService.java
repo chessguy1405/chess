@@ -2,14 +2,15 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.sql.*;
 import model.*;
 
 import java.sql.SQLException;
 
 public class CreateGameService {
     public static NewGameResult newGame(NewGameRequest request) throws DoesNotExistException, DataAccessException {
-        AuthDataAccess authAccess = new AuthDataAccessMem();
-        GameDataAccess gameAccess = new GameDataAccessMem();
+        AuthDataAccess authAccess = new AuthDataAccessSQL();
+        GameDataAccess gameAccess = new GameDataAccessSQL();
 
         AuthData auth = authAccess.getAuth(request.authToken());
         if (auth == null) {

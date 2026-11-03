@@ -1,12 +1,13 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.sql.*;
 import model.*;
 
 public class LoginService {
     public static LoginResult login(LoginRequest request) throws DataAccessException {
-        UserDataAccess userAccess = new UserDataAccessMem();
-        AuthDataAccess authAccess = new AuthDataAccessMem();
+        UserDataAccess userAccess = new UserDataAccessSQL();
+        AuthDataAccess authAccess = new AuthDataAccessSQL();
         UserData existingUser = userAccess.getUser(request.username());
         if (existingUser == null) {
             throw new DoesNotExistException("User does not exist");
