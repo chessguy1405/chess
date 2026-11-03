@@ -5,6 +5,8 @@ import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
 
+import java.util.Collection;
+
 public class GameDataSQLTests {
 
     GameDataAccess gameAccess = new GameDataAccessSQL();
@@ -53,6 +55,8 @@ public class GameDataSQLTests {
             GameData exampleGame = new GameData(gameId + i, null, null, gameName, new ChessGame());
             Assertions.assertDoesNotThrow(()->gameAccess.newGame(exampleGame));
         }
+        Collection<GameData> gameList = Assertions.assertDoesNotThrow(()->gameAccess.getGames());
+        Assertions.assertEquals(20, gameList.size());
         Assertions.assertDoesNotThrow(()->gameAccess.clearData());
         for (int i = 0; i < 20; i++) {
             var searchId = gameId + i;

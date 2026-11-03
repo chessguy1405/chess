@@ -4,6 +4,8 @@ import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
 
+import java.util.Collection;
+
 public class UserDataSQLTests {
 
     UserDataAccess userAccess = new UserDataAccessSQL();
@@ -39,6 +41,8 @@ public class UserDataSQLTests {
             UserData exampleUser = new UserData(username, "password", username + "@example.com");
             Assertions.assertDoesNotThrow(()->userAccess.newUser(exampleUser));
         }
+        Collection<UserData> userList = Assertions.assertDoesNotThrow(()->userAccess.getUsers());
+        Assertions.assertEquals(20, userList.size());
         Assertions.assertDoesNotThrow(()->userAccess.clearData());
         for (int i = 0; i < 20; i++) {
             String username = String.valueOf(i);
