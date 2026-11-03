@@ -2,14 +2,11 @@ package service;
 
 import java.util.*;
 
-import dataaccess.AuthDataAccess;
-import dataaccess.AuthDataAccessMem;
-import dataaccess.GameDataAccess;
-import dataaccess.GameDataAccessMem;
+import dataaccess.*;
 import model.*;
 
 public class ListGameService {
-    public static ListGameResult listGames(ListGameRequest request) throws DoesNotExistException {
+    public static ListGameResult listGames(ListGameRequest request) throws DoesNotExistException, DataAccessException {
         AuthDataAccess authAccess = new AuthDataAccessMem();
         GameDataAccess gameAccess = new GameDataAccessMem();
 

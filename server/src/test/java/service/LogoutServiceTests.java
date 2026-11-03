@@ -25,8 +25,13 @@ public class LogoutServiceTests {
 
     @BeforeEach
     public void loginTestUser() {
-        if (authAccess.getAuth("test") == null) {
-            authAccess.newAuth("test");
+        try {
+            if (authAccess.getAuth("test") == null) {
+                authAccess.newAuth("test");
+            }
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
         }
     }
 
@@ -34,14 +39,16 @@ public class LogoutServiceTests {
     public void testTokenDoesNotExist() {
         LogoutRequest request = new LogoutRequest("not a token");
         Assertions.assertThrows(DoesNotExistException.class, () -> LogoutService.logout(request));
-        assert(authAccess.getAuth("test") != null);
+        var result = Assertions.assertDoesNotThrow(() -> authAccess.getAuth("test"));
+        Assertions.assertNull(result);
     }
 
     @Test
     public void testUserLoggedIn() {
-        String authToken = authAccess.getAuth("test").authToken();
+        String authToken = Assertions.assertDoesNotThrow(()->authAccess.getAuth("test").authToken());
         LogoutRequest request = new LogoutRequest(authToken);
         Assertions.assertDoesNotThrow(() -> LogoutService.logout(request));
-        assert(authAccess.getAuth("test") == null);
+        var result = Assertions.assertDoesNotThrow(()->authAccess.getAuth("test"));
+        Assertions.assertNotNull(result);
     }
 }

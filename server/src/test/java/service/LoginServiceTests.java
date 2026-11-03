@@ -4,6 +4,8 @@ import org.junit.jupiter.api.*;
 import model.*;
 import dataaccess.*;
 
+import java.sql.SQLException;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LoginServiceTests {
     UserDataAccess usersAccess = new UserDataAccessMem();
@@ -24,31 +26,38 @@ public class LoginServiceTests {
 
     @BeforeEach
     public void logoutTestUser() {
-        auth1 = authAccess.getAuth("test");
-        if (auth1 != null) {
-            authAccess.removeAuth(auth1);
+        try {
+            auth1 = authAccess.getAuth("test");
+            if (auth1 != null) {
+                authAccess.removeAuth(auth1);
+            }
         }
-    }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }    }
 
     @Test
     public void testUserNotExist() {
         LoginRequest request = new LoginRequest("exam", "test");
         Assertions.assertThrows(DoesNotExistException.class, () -> LoginService.login(request));
-        assert(authAccess.getAuth("test") == null);
+        var result = Assertions.assertDoesNotThrow(() -> authAccess.getAuth("test"));
+        Assertions.assertNull(result);
     }
 
     @Test
     public void testWrongPassword() {
         LoginRequest request = new LoginRequest("test", "exam");
         Assertions.assertThrows(BadPasswordException.class, () -> LoginService.login(request));
-        assert(authAccess.getAuth("test") == null);
+        var result = Assertions.assertDoesNotThrow(() -> authAccess.getAuth("test"));
+        Assertions.assertNull(result);
     }
 
     @Test
     public void testValidLogin() {
         LoginRequest request = new LoginRequest("test", "test");
         Assertions.assertDoesNotThrow(() -> LoginService.login(request));
-        assert(authAccess.getAuth("test") != null);
+        var result = Assertions.assertDoesNotThrow(() -> authAccess.getAuth("test"));
+        Assertions.assertNull(result);
     }
 
     @Test
@@ -56,7 +65,8 @@ public class LoginServiceTests {
         LoginRequest request = new LoginRequest("test", "test");
         LoginResult auth2 = Assertions.assertDoesNotThrow(() -> LoginService.login(request));
         LoginResult auth3 = Assertions.assertDoesNotThrow(() -> LoginService.login(request));
-        assert(authAccess.getAuth("test") != null);
+        var result = Assertions.assertDoesNotThrow(() -> authAccess.getAuth("test"));
+        Assertions.assertNull(result);
         Assertions.assertNotEquals(auth2.authToken(), auth3.authToken());
     }
 }

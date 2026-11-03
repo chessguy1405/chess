@@ -24,8 +24,8 @@ public class AuthDataSQLTests {
 
     @BeforeEach
     void cleanup() {
-        authAccess.clearData();
         try {
+            authAccess.clearData();
             if (userAccess.getUser("testuser1") == null) {
                 userAccess.newUser(testUser);
             }
@@ -46,7 +46,7 @@ public class AuthDataSQLTests {
     public void newAuthNonexistent() {
         var returnedAuth = Assertions.assertDoesNotThrow(()->authAccess.newAuth("erftghyjuykjygtrfedws"));
         Assertions.assertNull(returnedAuth);
-        returnedAuth = Assertions.assertDoesNotThrow(()->authAccess.getAuth(""));
+        returnedAuth = Assertions.assertDoesNotThrow(()->authAccess.getAuth("erftghyjuykjygtrfedws"));
         Assertions.assertNull(returnedAuth);
     }
 
@@ -70,7 +70,7 @@ public class AuthDataSQLTests {
     public void clearDataTest() {
         Assertions.assertDoesNotThrow(()->authAccess.clearData());
         for(int i = 0; i < 20; i++) {
-            authAccess.newAuth("testuser1");
+            Assertions.assertDoesNotThrow(() -> authAccess.newAuth("testuser1"));
         }
         Assertions.assertDoesNotThrow(()->authAccess.clearData());
         var returnedAuth = Assertions.assertDoesNotThrow(()->authAccess.getAuth("testuser1"));
