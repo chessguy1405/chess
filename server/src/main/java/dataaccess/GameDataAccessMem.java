@@ -16,10 +16,13 @@ public class GameDataAccessMem implements GameDataAccess {
         games = new HashMap<>();
     }
 
-    public void newGame(GameData gameData) {
+    public void newGame(GameData gameData) throws DataAccessException {
         if (getGame(gameData.gameID()) == null) {
             games.put(gameData.gameID(), gameData);
             maxId++;
+        }
+        else {
+            throw(new DataAccessException("Tried to overwrite existing game"));
         }
     }
 

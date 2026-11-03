@@ -49,7 +49,8 @@ public class GameDataSQLTests {
     public void clearDataTest() {
         Assertions.assertDoesNotThrow(()->gameAccess.clearData());
         for (int i = 0; i < 20; i++) {
-            GameData exampleGame = new GameData(gameId + i, null, null, "game", new ChessGame());
+            String gameName = "game" + String.valueOf(i);
+            GameData exampleGame = new GameData(gameId + i, null, null, gameName, new ChessGame());
             Assertions.assertDoesNotThrow(()->gameAccess.newGame(exampleGame));
         }
         Assertions.assertDoesNotThrow(()->gameAccess.clearData());
@@ -72,7 +73,7 @@ public class GameDataSQLTests {
         Assertions.assertDoesNotThrow(()->gameAccess.newGame(testGame));
         var returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(testGame, returnedGame);
-        Assertions.assertDoesNotThrow(()->gameAccess.newGame(whiteGame));
+        Assertions.assertThrows(DataAccessException.class, ()->gameAccess.newGame(whiteGame));
         returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(testGame, returnedGame);
     }
