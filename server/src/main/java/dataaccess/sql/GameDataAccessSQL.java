@@ -2,14 +2,13 @@ package dataaccess.sql;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
-import dataaccess.GameDataAccess;
+import dataaccess.*;
 import model.GameData;
+import org.jetbrains.annotations.NotNull;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class GameDataAccessSQL implements GameDataAccess {
     private static int gameId = 1;
@@ -42,7 +41,26 @@ public class GameDataAccessSQL implements GameDataAccess {
             throw(new DataAccessException(e.getMessage()));
         }
     }
-    public Collection<GameData> getGames() {return null;}
+
+    public Collection<GameData> getGames() throws DataAccessException {
+        String sql = "SELECT * FROM game";
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = conn.prepareStatement(sql);
+            ResultSet result = statement.executeQuery();
+            Collection<GameData> gameList = new HashSet<>();
+            while (result.next()) {
+                gameList.add(constructGame(result));
+            }
+            if (gameList.isEmpty()) {
+                return null;
+            }
+            return gameList;
+        }
+        catch (SQLException e) {
+            throw(new DataAccessException(e.getMessage()));
+        }
+    }
+
     public GameData getGame(int id) throws DataAccessException {
         String sql = "SELECT * FROM game WHERE id=?";
         try (var conn = DatabaseManager.getConnection()) {
@@ -58,8 +76,48 @@ public class GameDataAccessSQL implements GameDataAccess {
             throw(new DataAccessException(e.getMessage()));
         }
     }
+
     public int nextId() {return gameId;}
-    public void joinGame(ChessGame.TeamColor color, String username, int gameId) throws DataAccessException {}
+
+    public void joinGame(@NotNull ChessGame.TeamColor color, String username, int gameId) throws DataAccessException {
+        String update_sql;
+        String check_sql = "SELECT * FROM game WHERE id=?";
+        String stringColor;
+
+        if (color.equals(ChessGame.TeamColor.WHITE)) {
+            update_sql = "UPDATE game SET whiteusername=? WHERE id=?";
+            stringColor = "white";
+        }
+        else {
+            update_sql = "UPDATE game SET blackusername=? WHERE id=?";
+            stringColor = "black";
+        }
+        try (var conn = DatabaseManager.getConnection()) {
+            var check = conn.prepareStatement(check_sql);
+            check.setInt(1, gameId);
+            ResultSet result = check.executeQuery();
+            assert(result.next());
+            boolean isTaken = stringColor.equals("black") && result.getString("blackusername") != null;
+            if (stringColor.equals("white") && result.getString("whiteusername") != null) {
+                isTaken = true;
+            }
+            if (!isTaken) {
+                var statement = conn.prepareStatement(update_sql);
+                statement.setString(1, username);
+                statement.setInt(2, gameId);
+                statement.executeUpdate();
+            }
+            else {
+                throw(new DataAccessException(stringColor + " already taken"));
+            }
+        }
+        catch (SQLException e) {
+            throw(new DataAccessException(e.getMessage()));
+        }
+        catch(AssertionError e) {
+            throw(new DataAccessException("Game does not exist"));
+        }
+    }
 
     private GameData constructGame(ResultSet result) throws SQLException {
         int gameId = result.getInt("id");
@@ -70,5 +128,4 @@ public class GameDataAccessSQL implements GameDataAccess {
         ChessGame game = serializer.fromJson(gameJson, ChessGame.class);
         return new GameData(gameId, whiteUsername, blackUsername, gameName, game);
     }
-
 }

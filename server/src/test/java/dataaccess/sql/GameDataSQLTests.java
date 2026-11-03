@@ -15,7 +15,7 @@ public class GameDataSQLTests {
     ChessGame game = new ChessGame();
     GameData testGame = new GameData(gameId, null, null, "testgame1", game);
     GameData whiteGame = new GameData(gameId, "testuser1", null, "testgame1", game);
-    GameData blackGame = new GameData(gameId, null, "testuser2", "testgame", game);
+    GameData blackGame = new GameData(gameId, null, "testuser2", "testgame1", game);
 
     @BeforeAll
     static void init() {
