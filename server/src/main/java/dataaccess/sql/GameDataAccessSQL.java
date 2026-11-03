@@ -11,7 +11,16 @@ import java.util.Collection;
 
 public class GameDataAccessSQL implements GameDataAccess {
 
-    public void clearData() {}
+    public void clearData() {
+        String sql = "DELETE FROM game";
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = conn.prepareStatement(sql);
+            statement.executeUpdate();
+        }
+        catch (SQLException e) {
+            throw(new DataAccessException("Unable to access database"));
+        }
+    }
     public void newGame(GameData gameData) {}
     public Collection<GameData> getGames() {return null;}
     public GameData getGame(int id) {return null;}

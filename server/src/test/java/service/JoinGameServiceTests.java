@@ -50,7 +50,7 @@ public class JoinGameServiceTests {
         JoinGameRequest request2 = new JoinGameRequest(auth3.authToken(), ChessGame.TeamColor.BLACK, 0);
         Assertions.assertDoesNotThrow(() -> JoinGameService.joinGame(request1));
         Assertions.assertDoesNotThrow(() -> JoinGameService.joinGame(request2));
-        GameData game = gamesAccess.getGame(0);
+        GameData game = Assertions.assertDoesNotThrow(()->gamesAccess.getGame(0));
         Assertions.assertEquals("exam", game.whiteUsername());
         Assertions.assertEquals("quiz", game.blackUsername());
     }
@@ -61,7 +61,7 @@ public class JoinGameServiceTests {
         JoinGameRequest request2 = new JoinGameRequest(auth2.authToken(), ChessGame.TeamColor.BLACK, 1);
         Assertions.assertThrows(TeamTakenException.class, () -> JoinGameService.joinGame(request1));
         Assertions.assertThrows(TeamTakenException.class, () -> JoinGameService.joinGame(request2));
-        GameData game = gamesAccess.getGame(1);
+        GameData game = Assertions.assertDoesNotThrow(()->gamesAccess.getGame(1));
         assert(game.whiteUsername().equals("test"));
         assert(game.blackUsername().equals("quiz"));
     }
@@ -72,7 +72,7 @@ public class JoinGameServiceTests {
         JoinGameRequest request2 = new JoinGameRequest(auth2.authToken(), ChessGame.TeamColor.BLACK, 2);
         Assertions.assertThrows(TeamTakenException.class, () -> JoinGameService.joinGame(request1));
         Assertions.assertThrows(TeamTakenException.class, () -> JoinGameService.joinGame(request2));
-        GameData game = gamesAccess.getGame(2);
+        GameData game = Assertions.assertDoesNotThrow(()->gamesAccess.getGame(2));
         assert(game.whiteUsername().equals("test"));
         assert(game.blackUsername().equals("exam"));
     }

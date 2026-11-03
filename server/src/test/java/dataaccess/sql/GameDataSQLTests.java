@@ -91,41 +91,41 @@ public class GameDataSQLTests {
 
     @Test
     public void joinGameAsWhite() {
-        gameAccess.newGame(testGame);
-        var returnedGame = gameAccess.getGame(gameId);
+        Assertions.assertDoesNotThrow(()->gameAccess.newGame(testGame));
+        var returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(testGame, returnedGame);
         Assertions.assertDoesNotThrow(()->gameAccess.joinGame(ChessGame.TeamColor.WHITE, "testuser1", gameId));
-        returnedGame = gameAccess.getGame(gameId);
+        returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(whiteGame, returnedGame);
     }
 
     @Test
     public void joinGameAsBlack() {
-        gameAccess.newGame(testGame);
-        var returnedGame = gameAccess.getGame(gameId);
+        Assertions.assertDoesNotThrow(()->gameAccess.newGame(testGame));
+        var returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(testGame, returnedGame);
         Assertions.assertDoesNotThrow(()->gameAccess.joinGame(ChessGame.TeamColor.BLACK, "testuser2", gameId));
-        returnedGame = gameAccess.getGame(gameId);
+        returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(blackGame, returnedGame);
     }
 
     @Test
     public void joinGameAsWhiteFail() {
-        gameAccess.newGame(whiteGame);
-        var returnedGame = gameAccess.getGame(gameId);
+        Assertions.assertDoesNotThrow(()->gameAccess.newGame(whiteGame));
+        var returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(whiteGame, returnedGame);
         Assertions.assertThrows(DataAccessException.class, ()->gameAccess.joinGame(ChessGame.TeamColor.WHITE, "testuser2", gameId));
-        returnedGame = gameAccess.getGame(gameId);
+        returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(whiteGame, returnedGame);
     }
 
     @Test
     public void joinGameAsBlackFail() {
-        gameAccess.newGame(blackGame);
-        var returnedGame = gameAccess.getGame(gameId);
+        Assertions.assertDoesNotThrow(()->gameAccess.newGame(blackGame));
+        var returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(blackGame, returnedGame);
         Assertions.assertThrows(DataAccessException.class, ()->gameAccess.joinGame(ChessGame.TeamColor.BLACK, "testuser1", gameId));
-        returnedGame = gameAccess.getGame(gameId);
+        returnedGame = Assertions.assertDoesNotThrow(()->gameAccess.getGame(gameId));
         Assertions.assertEquals(blackGame, returnedGame);
     }
 

@@ -28,7 +28,12 @@ public class CreateGameServiceTests {
 
     @BeforeEach
     public void clearGames() {
-        gamesAccess.clearData();
+        try {
+            gamesAccess.clearData();
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }
     }
 
     @Test
@@ -51,7 +56,7 @@ public class CreateGameServiceTests {
     }
 
     private void countGames(int expected) {
-        Collection<GameData> gameList = gamesAccess.getGames();
+        Collection<GameData> gameList = Assertions.assertDoesNotThrow(()->gamesAccess.getGames());
         Assertions.assertEquals(expected, gameList.size());
     }
 }

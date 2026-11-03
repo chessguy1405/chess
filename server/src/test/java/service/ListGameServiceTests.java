@@ -58,7 +58,7 @@ public class ListGameServiceTests {
         int i = 0;
         while (i < gameCount) {
             GameData game = new GameData(i, "test", "test", "test" + String.valueOf(i), new ChessGame());
-            gamesAccess.newGame(game);
+            Assertions.assertDoesNotThrow(()->gamesAccess.newGame(game));
             i++;
         }
     }

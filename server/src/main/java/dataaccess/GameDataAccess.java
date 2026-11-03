@@ -5,10 +5,10 @@ import chess.ChessGame;
 import java.util.Collection;
 
 public interface GameDataAccess {
-    void clearData();
-    void newGame(GameData gameData);
-    Collection<GameData> getGames();
-    GameData getGame(int id);
+    void clearData() throws DataAccessException;
+    void newGame(GameData gameData) throws DataAccessException;
+    Collection<GameData> getGames() throws DataAccessException;
+    GameData getGame(int id) throws DataAccessException;
     int nextId();
     void joinGame(ChessGame.TeamColor color, String username, int gameId) throws DataAccessException;
 }

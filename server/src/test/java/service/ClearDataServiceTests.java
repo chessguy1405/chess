@@ -93,7 +93,7 @@ public class ClearDataServiceTests {
         int i = 0;
         while (i < gameCount) {
             String gameName = String.valueOf(i);
-            gamesAccess.newGame(new GameData(i, "test", "test", gameName, new ChessGame()));
+            Assertions.assertDoesNotThrow(()->gamesAccess.newGame(new GameData(i, "test", "test", gameName, new ChessGame())));
             i++;
         }
     }
