@@ -96,7 +96,9 @@ public class GameDataAccessSQL implements GameDataAccess {
             var check = conn.prepareStatement(check_sql);
             check.setInt(1, gameId);
             ResultSet result = check.executeQuery();
-            assert(result.next());
+            if (!result.next()) {
+                throw new DataAccessException("Game does not exist");
+            }
             boolean isTaken = stringColor.equals("black") && result.getString("blackusername") != null;
             if (stringColor.equals("white") && result.getString("whiteusername") != null) {
                 isTaken = true;
@@ -113,9 +115,6 @@ public class GameDataAccessSQL implements GameDataAccess {
         }
         catch (SQLException e) {
             throw(new DataAccessException(e.getMessage()));
-        }
-        catch(AssertionError e) {
-            throw(new DataAccessException("Game does not exist"));
         }
     }
 
