@@ -7,6 +7,7 @@ import dataaccess.DatabaseManager;
 import dataaccess.GameDataAccess;
 import model.GameData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -35,15 +36,39 @@ public class GameDataAccessSQL implements GameDataAccess {
             var gameJson = serializer.toJson(gameData.game());
             statement.setString(5, gameJson);
             statement.executeUpdate();
+            gameId++;
         }
         catch(SQLException e) {
             throw(new DataAccessException(e.getMessage()));
         }
     }
     public Collection<GameData> getGames() {return null;}
-    public GameData getGame(int id) {return null;}
+    public GameData getGame(int id) throws DataAccessException {
+        String sql = "SELECT * FROM game WHERE id=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = conn.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                return constructGame(result);
+            }
+            return null;
+        }
+        catch (SQLException e) {
+            throw(new DataAccessException(e.getMessage()));
+        }
+    }
     public int nextId() {return gameId;}
     public void joinGame(ChessGame.TeamColor color, String username, int gameId) throws DataAccessException {}
 
+    private GameData constructGame(ResultSet result) throws SQLException {
+        int gameId = result.getInt("id");
+        String whiteUsername = result.getString("whiteusername");
+        String blackUsername = result.getString("blackusername");
+        String gameName = result.getString("gamename");
+        String gameJson = result.getString("game");
+        ChessGame game = serializer.fromJson(gameJson, ChessGame.class);
+        return new GameData(gameId, whiteUsername, blackUsername, gameName, game);
+    }
 
 }

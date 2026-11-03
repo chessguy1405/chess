@@ -9,8 +9,8 @@ public class GameDataSQLTests {
 
     GameDataAccess gameAccess = new GameDataAccessSQL();
     UserDataAccess userAccess = new UserDataAccessSQL();
-    UserData testUser1 = new UserData("testuser1", "testpassword", "user@example.com");
-    UserData testUser2 = new UserData("testuser2", "testpassword", "user@example.com");
+    UserData testUser1 = new UserData("testuser1", "testpassword", "user1@example.com");
+    UserData testUser2 = new UserData("testuser2", "testpassword", "user2@example.com");
     int gameId = gameAccess.nextId();
     ChessGame game = new ChessGame();
     GameData testGame = new GameData(gameId, null, null, "testgame1", game);
@@ -85,7 +85,7 @@ public class GameDataSQLTests {
 
     @Test
     public void nextIDTest() {
-        var exampleId = Assertions.assertDoesNotThrow(()->gameAccess.nextId());
+        var exampleId = gameAccess.nextId();
         Assertions.assertInstanceOf(Integer.class, exampleId);
     }
 

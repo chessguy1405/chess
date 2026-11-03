@@ -28,7 +28,12 @@ public class ListGameServiceTests {
 
     @BeforeEach
     public void cleanup() {
-        gamesAccess.clearData();
+        try {
+            gamesAccess.clearData();
+        }
+        catch (DataAccessException e) {
+            throw(new RuntimeException(e.getMessage()));
+        }
     }
 
     @Test
