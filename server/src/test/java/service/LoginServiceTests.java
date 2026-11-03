@@ -18,7 +18,8 @@ public class LoginServiceTests {
     @BeforeAll
     public void init() {
         try {
-            usersAccess.newUser(user1);
+            usersAccess.clearData();
+            RegisterService.register(user1);
         }
         catch (DataAccessException e) {
             throw(new RuntimeException(e.getMessage()));

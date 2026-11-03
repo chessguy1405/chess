@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import dataaccess.sql.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class LoginService {
     public static LoginResult login(LoginRequest request) throws DataAccessException {
@@ -12,7 +13,7 @@ public class LoginService {
         if (existingUser == null) {
             throw new DoesNotExistException("User does not exist");
         }
-        if (!existingUser.password().equals(request.password())) {
+        if (!BCrypt.checkpw(request.password(), existingUser.password())) {
             throw new BadPasswordException("Incorrect password");
         }
         AuthData auth = authAccess.newAuth(request.username());
