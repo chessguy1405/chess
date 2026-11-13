@@ -1,7 +1,10 @@
 package client;
 
+import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
+
+import java.util.List;
 import java.util.Map;
 
 
@@ -31,6 +34,7 @@ public class ServerFacadeTests {
         if (!facade.clearServerState()) {
             throw(new RuntimeException("Failed to clear server state"));
         }
+        facade.logoutUser();
     }
 
     @Test
@@ -86,13 +90,56 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void loginFailedWrongUser() {}
+    public void loginFailedWrongUser() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.logoutUser();
+        Assertions.assertFalse(facade.loginUser(user2.get("username"), user2.get("password")));
+        Assertions.assertNull(facade.getCurrentUser());
+        Assertions.assertFalse(facade.isLoggedIn());
+    }
 
     @Test
-    public void newGame() {}
+    public void newGame() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        Assertions.assertTrue(facade.createGame("game1"));
+        Assertions.assertTrue(facade.createGame("game2"));
+        List<GameData> gameList = facade.listGames();
+        Assertions.assertEquals(2, gameList.size());
+        for (int i=0; i<2; i++) {
+            boolean found = false;
+            String gameName = "game" + String.valueOf(i);
+            for (GameData game : gameList) {
+                if (game.gameName().equals(gameName)) {
+                    found = true;
+                    break;
+                }
+            }
+            Assertions.assertTrue(found);
+        }
+    }
 
     @Test
-    public void newGameFailed() {}
+    public void newGameFailedSameName() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        Assertions.assertTrue(facade.createGame("game1"));
+        Assertions.assertFalse(facade.createGame("game1"));
+        List<GameData> gameList = facade.listGames();
+        Assertions.assertEquals(1, gameList.size());
+        GameData game = gameList.getFirst();
+        Assertions.assertEquals("game1", game.gameName());
+    }
+
+    @Test
+    public void newGameFailedNoUser() {
+        Assertions.assertFalse(facade.createGame("game1"));
+        List<GameData> gameList = facade.listGames();
+        Assertions.assertEquals(0, gameList.size());
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.logoutUser();
+        Assertions.assertFalse(facade.createGame("game1"));
+        gameList = facade.listGames();
+        Assertions.assertEquals(0, gameList.size());
+    }
 
     @Test
     public void joinGame() {}

@@ -2,6 +2,8 @@ package client;
 
 import model.*;
 
+import java.util.List;
+
 public class ServerFacade {
 
     static private String currentAuth;
@@ -22,12 +24,14 @@ public class ServerFacade {
 
     public boolean joinGame(String name) { return false; }
 
-    public boolean enterGame(String name) { return false; }
+    public GameData enterGame(String name) { return null; }
 
     public boolean createGame(String name) { return false; }
 
     public String getCurrentUser() { return(currentUser);}
 
     public boolean isLoggedIn() { return(currentAuth != null); }
+
+    public List<GameData> listGames() { return null; }
 
 }
