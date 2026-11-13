@@ -197,12 +197,12 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void observeGameAsWhite() {
+    public void enterGameAsWhite() {
         facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
     }
 
     @Test
-    public void observeGameAsBlack() {
+    public void enterGameAsBlack() {
         facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
     }
 
