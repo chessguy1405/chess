@@ -35,31 +35,48 @@ public class ServerFacadeTests {
 
     @Test
     public void registerTest() {
-        Assertions.assertTrue(() -> facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
-        Assertions.assertTrue(() -> facade.registerUser(user2.get("username"), user2.get("password"), user2.get("email")));
-        Assertions.assertTrue(() -> facade.registerUser(user3.get("username"), user3.get("password"), user3.get("email")));
+        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        Assertions.assertTrue(facade.registerUser(user2.get("username"), user2.get("password"), user2.get("email")));
+        Assertions.assertTrue(facade.registerUser(user3.get("username"), user3.get("password"), user3.get("email")));
     }
 
     @Test
     public void registerFailedTest() {
-        Assertions.assertTrue(() -> facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
-        Assertions.assertFalse(() -> facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        Assertions.assertFalse(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
     }
-
-    @Test
-    public void loginTest() {}
-
-    @Test
-    public void loginFailedWrongPassword() {}
-
-    @Test
-    public void loginFailedWrongUser() {}
 
     @Test
     public void logoutTest() {}
 
     @Test
     public void logoutFailedNoUser() {}
+
+    @Test
+    public void loginTest() {
+        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        Assertions.assertTrue(facade.logoutUser());
+        Assertions.assertTrue(facade.loginUser(user1.get("username"), user1.get("password")));
+        Assertions.assertEquals("test", facade.getCurrentUser());
+    }
+
+    @Test
+    public void loginFailedWrongPassword() {
+        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        Assertions.assertTrue(facade.logoutUser());
+        Assertions.assertFalse(facade.loginUser(user1.get("username"), user2.get("password")));
+        Assertions.assertNull(facade.getCurrentUser());
+        Assertions.assertFalse(facade.isLoggedIn());
+    }
+
+    @Test
+    public void loginFailedWrongUser() {}
+
+    @Test
+    public void newGame() {}
+
+    @Test
+    public void newGameFailed() {}
 
     @Test
     public void joinGame() {}
