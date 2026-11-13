@@ -193,22 +193,39 @@ public class ServerFacadeTests {
 
     @Test
     public void observeGame() {
-        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        createAndJoin();
+        facade.loginUser(user3.get("username"), user3.get("password"));
+        List<GameData> gameList = facade.listGames();
+        GameData game = gameList.getFirst();
+        Assertions.assertEquals(game, facade.enterGame("game"));
+        Assertions.assertTrue(facade.isViewing());
+        Assertions.assertFalse(facade.isPlaying());
     }
 
     @Test
     public void enterGameAsWhite() {
-        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
-    }
+        createAndJoin();
+        facade.loginUser(user1.get("username"), user1.get("password"));
+        List<GameData> gameList = facade.listGames();
+        GameData game = gameList.getFirst();
+        Assertions.assertEquals(game, facade.enterGame("game"));
+        Assertions.assertTrue(facade.isViewing());
+        Assertions.assertTrue(facade.isPlaying());    }
 
     @Test
     public void enterGameAsBlack() {
-        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
-    }
+        createAndJoin();
+        facade.loginUser(user3.get("username"), user3.get("password"));
+        List<GameData> gameList = facade.listGames();
+        GameData game = gameList.getFirst();
+        Assertions.assertEquals(game, facade.enterGame("game"));
+        Assertions.assertTrue(facade.isViewing());
+        Assertions.assertTrue(facade.isPlaying());    }
 
     @Test
     public void observeGameFailedNoUser() {
-        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        createAndJoin();
+        Assertions.assertNull(facade.enterGame("game"));
     }
 
     @Test
@@ -219,6 +236,16 @@ public class ServerFacadeTests {
     @Test
     public void listGamesFailed() {
         facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+    }
+
+    private void createAndJoin() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.createGame("game");
+        facade.joinGame("game", "white");
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.joinGame("game", "black");
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.logoutUser();
     }
 
 }

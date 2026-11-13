@@ -9,11 +9,15 @@ public class ServerFacade {
     static private String currentAuth;
     static private String currentUser;
     static private String serverHost;
+    static private boolean viewing;
+    static private boolean playing;
 
     ServerFacade(String host) {
         currentAuth = null;
         currentUser = null;
         serverHost = host;
+        viewing = false;
+        playing = false;
     }
 
     public boolean clearServerState() { return false; }
@@ -34,6 +38,9 @@ public class ServerFacade {
 
     public boolean isLoggedIn() { return(currentAuth != null); }
 
-    public List<GameData> listGames() { return null; }
+    public List<GameData> listGames() { return(null); }
 
+    public boolean isViewing() { return(viewing); }
+
+    public boolean isPlaying() { return(playing); }
 }
