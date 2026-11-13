@@ -40,21 +40,27 @@ public class ServerFacadeTests {
     @Test
     public void registerTest() {
         Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        Assertions.assertTrue(facade.isLoggedIn());
+        Assertions.assertEquals("test", facade.getCurrentUser());
         Assertions.assertTrue(facade.registerUser(user2.get("username"), user2.get("password"), user2.get("email")));
+        Assertions.assertTrue(facade.isLoggedIn());
+        Assertions.assertEquals("quiz", facade.getCurrentUser());
         Assertions.assertTrue(facade.registerUser(user3.get("username"), user3.get("password"), user3.get("email")));
+        Assertions.assertTrue(facade.isLoggedIn());
+        Assertions.assertEquals("exam", facade.getCurrentUser());
     }
 
     @Test
     public void registerFailedTest() {
         Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
         Assertions.assertFalse(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        Assertions.assertTrue(facade.isLoggedIn());
+        Assertions.assertEquals("test", facade.getCurrentUser());
     }
 
     @Test
     public void logoutTest() {
-        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
-        Assertions.assertTrue(facade.isLoggedIn());
-        Assertions.assertEquals("test", facade.getCurrentUser());
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
         Assertions.assertTrue(facade.logoutUser());
         Assertions.assertFalse(facade.isLoggedIn());
         Assertions.assertNull(facade.getCurrentUser());
@@ -63,9 +69,7 @@ public class ServerFacadeTests {
     @Test
     public void logoutFailedNoUser() {
         Assertions.assertFalse(facade.logoutUser());
-        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
-        Assertions.assertTrue(facade.isLoggedIn());
-        Assertions.assertEquals("test", facade.getCurrentUser());
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
         Assertions.assertTrue(facade.logoutUser());
         Assertions.assertFalse(facade.isLoggedIn());
         Assertions.assertNull(facade.getCurrentUser());
@@ -74,16 +78,16 @@ public class ServerFacadeTests {
 
     @Test
     public void loginTest() {
-        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
-        Assertions.assertTrue(facade.logoutUser());
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.logoutUser();
         Assertions.assertTrue(facade.loginUser(user1.get("username"), user1.get("password")));
         Assertions.assertEquals("test", facade.getCurrentUser());
     }
 
     @Test
     public void loginFailedWrongPassword() {
-        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
-        Assertions.assertTrue(facade.logoutUser());
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.logoutUser();
         Assertions.assertFalse(facade.loginUser(user1.get("username"), user2.get("password")));
         Assertions.assertNull(facade.getCurrentUser());
         Assertions.assertFalse(facade.isLoggedIn());
