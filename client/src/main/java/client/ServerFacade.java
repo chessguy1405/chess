@@ -8,10 +8,12 @@ public class ServerFacade {
 
     static private String currentAuth;
     static private String currentUser;
+    static private String serverHost;
 
-    ServerFacade() {
+    ServerFacade(String host) {
         currentAuth = null;
         currentUser = null;
+        serverHost = host;
     }
 
     public boolean clearServerState() { return false; }
@@ -22,7 +24,7 @@ public class ServerFacade {
 
     public boolean registerUser(String username, String password, String email) { return false; }
 
-    public boolean joinGame(String name) { return false; }
+    public boolean joinGame(String name, String color) { return false; }
 
     public GameData enterGame(String name) { return null; }
 

@@ -19,7 +19,7 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        facade = new ServerFacade();
+        facade = new ServerFacade("localhost");
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
     }
@@ -146,21 +146,79 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void joinGame() {}
+    public void joinGame() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.createGame("game");
+        Assertions.assertTrue(facade.joinGame("game", "white"));
+        facade.registerUser(user2.get("username"), user2.get("password"), user2.get("email"));
+        Assertions.assertTrue(facade.joinGame("game", "black"));
+        List<GameData> gameList = facade.listGames();
+        GameData game = gameList.getFirst();
+        Assertions.assertEquals("test", game.whiteUsername());
+        Assertions.assertEquals("quiz", game.blackUsername());
+    }
 
     @Test
-    public void joinGameFailedNoUser() {}
+    public void joinGameFailedNoGame() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        Assertions.assertFalse(facade.joinGame("game", "white"));
+    }
 
     @Test
-    public void joinGameFailedColorTaken() {}
+    public void joinGameFailedNoUser() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.createGame("game");
+        facade.logoutUser();
+        Assertions.assertFalse(facade.joinGame("game", "white"));
+        facade.loginUser(user1.get("username"), user1.get("password"));
+        List<GameData> gameList = facade.listGames();
+        GameData game = gameList.getFirst();
+        Assertions.assertNull(game.whiteUsername());
+    }
 
     @Test
-    public void observeGame() {}
+    public void joinGameFailedColorTaken() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.createGame("game");
+        Assertions.assertTrue(facade.joinGame("game", "white"));
+        Assertions.assertTrue(facade.joinGame("game", "black"));
+        facade.registerUser(user2.get("username"), user2.get("password"), user2.get("email"));
+        Assertions.assertFalse(facade.joinGame("game", "white"));
+        Assertions.assertFalse(facade.joinGame("game", "black"));
+        List<GameData> gameList = facade.listGames();
+        GameData game = gameList.getFirst();
+        Assertions.assertEquals("test", game.whiteUsername());
+        Assertions.assertEquals("test", game.whiteUsername());
+    }
 
     @Test
-    public void observeGameAsWhite() {}
+    public void observeGame() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+    }
 
     @Test
-    public void observeGameAsBlack() {}
+    public void observeGameAsWhite() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+    }
+
+    @Test
+    public void observeGameAsBlack() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+    }
+
+    @Test
+    public void observeGameFailedNoUser() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+    }
+
+    @Test
+    public void listGames() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+    }
+
+    @Test
+    public void listGamesFailed() {
+        facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+    }
 
 }
