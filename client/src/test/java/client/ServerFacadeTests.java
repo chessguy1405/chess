@@ -47,10 +47,26 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void logoutTest() {}
+    public void logoutTest() {
+        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        Assertions.assertTrue(facade.isLoggedIn());
+        Assertions.assertEquals("test", facade.getCurrentUser());
+        Assertions.assertTrue(facade.logoutUser());
+        Assertions.assertFalse(facade.isLoggedIn());
+        Assertions.assertNull(facade.getCurrentUser());
+    }
 
     @Test
-    public void logoutFailedNoUser() {}
+    public void logoutFailedNoUser() {
+        Assertions.assertFalse(facade.logoutUser());
+        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        Assertions.assertTrue(facade.isLoggedIn());
+        Assertions.assertEquals("test", facade.getCurrentUser());
+        Assertions.assertTrue(facade.logoutUser());
+        Assertions.assertFalse(facade.isLoggedIn());
+        Assertions.assertNull(facade.getCurrentUser());
+        Assertions.assertFalse(facade.logoutUser());
+    }
 
     @Test
     public void loginTest() {
