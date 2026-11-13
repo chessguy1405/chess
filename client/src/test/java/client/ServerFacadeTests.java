@@ -4,6 +4,7 @@ import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -231,11 +232,32 @@ public class ServerFacadeTests {
     @Test
     public void listGames() {
         facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        List<String> gameNames = new ArrayList<>();
+        for (int i=0; i<20; i++) {
+            String gameName = "game" + String.valueOf(i);
+            gameNames.add(gameName);
+        }
+        List<GameData> gameList = Assertions.assertDoesNotThrow(() -> facade.listGames());
+        Assertions.assertEquals(20, gameList.size());
+        for (GameData game : gameList) {
+            boolean found = false;
+            for (String name : gameNames) {
+                if (game.gameName().equals(name)) {
+                    found = true;
+                    break;
+                }
+            }
+            Assertions.assertTrue(found);
+        }
     }
 
     @Test
     public void listGamesFailed() {
+        Assertions.assertNull(facade.listGames());
         facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        facade.createGame("game");
+        facade.logoutUser();
+        Assertions.assertNull(facade.listGames());
     }
 
     private void createAndJoin() {
