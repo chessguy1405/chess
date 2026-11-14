@@ -106,6 +106,7 @@ public class ServerFacade {
                     serverMessage = "Successfully logged out!";
                     currentUser = null;
                     currentAuth = null;
+                    exitGame();
                     return true;
                 } else if (response.statusCode() == 401) {
                     serverMessage = authErrorMessage;
