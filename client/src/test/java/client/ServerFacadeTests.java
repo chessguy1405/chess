@@ -20,9 +20,9 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        facade = new ServerFacade("localhost");
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade("http://localhost:" + port);
     }
 
     @AfterAll
@@ -40,7 +40,9 @@ public class ServerFacadeTests {
 
     @Test
     public void registerTest() {
-        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
+        boolean success = facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
+        System.out.println(facade.getServerMessage());
+        Assertions.assertTrue(success);
         Assertions.assertTrue(facade.isLoggedIn());
         Assertions.assertEquals("test", facade.getCurrentUser());
         Assertions.assertTrue(facade.registerUser(user2.get("username"), user2.get("password"), user2.get("email")));
