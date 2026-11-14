@@ -18,13 +18,18 @@ public class ServerFacade {
 
     static private String currentAuth = null;
     static private String currentUser = null;
-    static private String serverHost;
+    static private String serverMessage = null;
+
     static private boolean viewing = false;
     static private boolean playing = false;
+
+    static private String serverHost;
     static private final Gson serializer = new Gson();
     private final HttpClient client = HttpClient.newHttpClient();
-    static private String serverMessage = null;
+
     static private final String internalErrorMessage = "An unknown error occurred. Please try again or contact the developer.";
+    static private final String netErrorMessage = "Unable to reach the server. Please check your network connection.";
+    static private final String authErrorMessage = "Hmmm, looks like you're not logged in";
 
     private enum Method {
         GET,
@@ -49,7 +54,7 @@ public class ServerFacade {
             return false;
         }
         catch (IOException | InterruptedException e) {
-            serverMessage = "Unable to reach the server. Please check your network connection.";
+            serverMessage = netErrorMessage;
             return false;
         }
     }
@@ -81,14 +86,14 @@ public class ServerFacade {
             }
         }
         catch (IOException | InterruptedException e) {
-            serverMessage = "Unable to reach the server. Please check your network connection.";
+            serverMessage = netErrorMessage;
             return false;
         }
     }
 
     public boolean logoutUser() {
         if (currentAuth == null) {
-            serverMessage = "Hmmm, looks like you're not logged in";
+            serverMessage = authErrorMessage;
             return false;
         }
         else {
@@ -101,14 +106,14 @@ public class ServerFacade {
                     currentAuth = null;
                     return true;
                 } else if (response.statusCode() == 401) {
-                    serverMessage = "Hmmm, looks like you're not logged in";
+                    serverMessage = authErrorMessage;
                     return false;
                 } else {
                     serverMessage = "Failed to log out. " + internalErrorMessage;
                     return false;
                 }
             } catch (IOException | InterruptedException e) {
-                serverMessage = "Unable to reach the server. Please check your network connection.";
+                serverMessage = netErrorMessage;
                 return false;
             }
         }
@@ -141,7 +146,7 @@ public class ServerFacade {
             }
         }
         catch (IOException | InterruptedException e) {
-            serverMessage = "Unable to reach the server. Please check your network connection.";
+            serverMessage = netErrorMessage;
             return false;
         }
     }
@@ -152,7 +157,7 @@ public class ServerFacade {
 
     public boolean createGame(String name) {
         if (currentAuth == null) {
-            serverMessage = "Hmmm, looks like you're not logged in";
+            serverMessage = authErrorMessage;
             return false;
         }
         else {
@@ -162,11 +167,10 @@ public class ServerFacade {
                 var response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     serverMessage = "Successfully created new game '" + name + "'";
-                    System.out.println(response.body());
                     return true;
                 }
                 else if (response.statusCode() == 401) {
-                    serverMessage = "Hmmm, looks like you're not logged in";
+                    serverMessage = authErrorMessage;
                     return false;
                 }
                 else if (response.statusCode() == 400) {
@@ -179,7 +183,7 @@ public class ServerFacade {
                 }
             }
             catch (IOException | InterruptedException e) {
-                serverMessage = "Unable to reach the server. Please check your network connection.";
+                serverMessage = netErrorMessage;
                 return false;
             }
         }
@@ -187,7 +191,7 @@ public class ServerFacade {
 
     public List<GameData> listGames() {
         if (currentAuth == null) {
-            serverMessage = "Hmmm, looks like you're not logged in";
+            serverMessage = authErrorMessage;
             return null;
         }
         else {
@@ -196,12 +200,11 @@ public class ServerFacade {
                 var response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     var responseList = serializer.fromJson(response.body(), ListGameResult.class);
-                    System.out.println(responseList);
                     serverMessage = "Fetched games";
                     return new ArrayList<>(responseList.games());
                 }
                 else if (response.statusCode() == 401) {
-                    serverMessage = "Hmmm, looks like you're not logged in";
+                    serverMessage = authErrorMessage;
                     return null;
                 }
                 else {
@@ -210,7 +213,7 @@ public class ServerFacade {
                 }
             }
             catch (IOException | InterruptedException e) {
-                serverMessage = "Unable to reach the server. Please check your network connection.";
+                serverMessage = netErrorMessage;
                 return null;
             }
         }
