@@ -40,9 +40,7 @@ public class ServerFacadeTests {
 
     @Test
     public void registerTest() {
-        boolean success = facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
-        System.out.println(facade.getServerMessage());
-        Assertions.assertTrue(success);
+        Assertions.assertTrue(facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email")));
         Assertions.assertTrue(facade.isLoggedIn());
         Assertions.assertEquals("test", facade.getCurrentUser());
         Assertions.assertTrue(facade.registerUser(user2.get("username"), user2.get("password"), user2.get("email")));

@@ -52,7 +52,37 @@ public class ServerFacade {
         }
     }
 
-    public boolean loginUser(String username, String password) { return false; }
+    public boolean loginUser(String username, String password) {
+        try {
+            var loginMap = Map.of("username", username, "password", password);
+            HttpRequest request = makeRequest("/session", Method.POST, false, loginMap);
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                serverMessage = "Successfully logged in " + username;
+                var responseBody = response.body();
+                var responseJson = serializer.fromJson(responseBody, Map.class);
+                currentUser = responseJson.get("username").toString();
+                currentAuth = responseJson.get("authToken").toString();
+                return true;
+            }
+            else if (response.statusCode() == 401) {
+                serverMessage = "Username or password is incorrect";
+                return false;
+            }
+            else if (response.statusCode() == 400) {
+                serverMessage = "Username and password are required";
+                return false;
+            }
+            else {
+                serverMessage = "Failed to log in. An unknown error occurred. Please contact the developer.";
+                return false;
+            }
+        }
+        catch (IOException | InterruptedException e) {
+            serverMessage = "Unable to reach the server. Please check your network connection.";
+            return false;
+        }
+    }
 
     public boolean logoutUser() {
         if (currentAuth == null) {
