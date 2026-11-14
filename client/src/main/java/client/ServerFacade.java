@@ -151,7 +151,53 @@ public class ServerFacade {
         }
     }
 
-    public boolean joinGame(String name, String color) { return false; }
+    public boolean joinGame(String name, String color) {
+        if (currentAuth == null) {
+            serverMessage = authErrorMessage;
+            return false;
+        }
+        try {
+            List<GameData> gameList = listGames();
+            int id = -1;
+            for (GameData game : gameList) {
+                if (game.gameName().equals(name)) {
+                    id = game.gameID();
+                    break;
+                }
+            }
+            if (id == -1) {
+                serverMessage = "Game does not exist";
+                return false;
+            }
+            var jsonMap = Map.of("gameID", id, "playerColor", color.toUpperCase(Locale.ROOT));
+            var request = makeRequest("/game", Method.PUT, true, jsonMap);
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                serverMessage = "Successfully joined " + name + " as " + color.toLowerCase(Locale.ROOT);
+                return true;
+            }
+            else if (response.statusCode() == 400) {
+                serverMessage = "Game name and color are required.";
+                return false;
+            }
+            else if (response.statusCode() == 401) {
+                serverMessage = authErrorMessage;
+                return false;
+            }
+            else if (response.statusCode() == 403) {
+                serverMessage = "Failed to join game. " + color.toUpperCase(Locale.ROOT) + " already taken.";
+                return false;
+            }
+            else {
+                serverMessage = "Failed to join game. " + internalErrorMessage;
+                return false;
+            }
+        }
+        catch (IOException | InterruptedException e) {
+            serverMessage = netErrorMessage;
+            return false;
+        }
+    }
 
     public GameData enterGame(String name) { return null; }
 
@@ -273,7 +319,7 @@ public class ServerFacade {
         }
     }
 
-    private HttpRequest makeRequest(String path, Method method, boolean needsAuth, Map<String, String> jsonMap) {
+    private HttpRequest makeRequest(String path, Method method, boolean needsAuth, Map<String, ?> jsonMap) {
         try {
             URI uri = new URI(serverHost + path);
             HttpRequest request;

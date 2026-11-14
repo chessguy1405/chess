@@ -83,9 +83,7 @@ public class Server {
                 if (color.equals("WHITE")) { pieceColor = ChessGame.TeamColor.WHITE; }
                 else if (color.equals("BLACK")) {pieceColor = ChessGame.TeamColor.BLACK; }
                 else { throw new BadColorException("Invalid color, must be one of [WHITE, BLACK]"); }
-                String gameIdString = bodyJson.get("gameID").toString();
-                String gameIdNumString = gameIdString.substring(0, gameIdString.length() - 2);
-                int gameId = Integer.parseInt(gameIdNumString);
+                int gameId = Double.valueOf(bodyJson.get("gameID").toString()).intValue();
                 JoinGameRequest request = new JoinGameRequest(token, pieceColor, gameId);
                 JoinGameService.joinGame(request);
                 context.status(200);
