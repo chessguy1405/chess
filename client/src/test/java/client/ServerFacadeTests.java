@@ -110,9 +110,10 @@ public class ServerFacadeTests {
         Assertions.assertTrue(facade.createGame("game2"));
         List<GameData> gameList = facade.listGames();
         Assertions.assertEquals(2, gameList.size());
-        for (int i=0; i<2; i++) {
+        for (int i=1; i<3; i++) {
             boolean found = false;
             String gameName = "game" + String.valueOf(i);
+            System.out.println(gameName);
             for (GameData game : gameList) {
                 if (game.gameName().equals(gameName)) {
                     found = true;
@@ -138,12 +139,12 @@ public class ServerFacadeTests {
     public void newGameFailedNoUser() {
         Assertions.assertFalse(facade.createGame("game1"));
         List<GameData> gameList = facade.listGames();
-        Assertions.assertEquals(0, gameList.size());
+        Assertions.assertNull(gameList);
         facade.registerUser(user1.get("username"), user1.get("password"), user1.get("email"));
         facade.logoutUser();
         Assertions.assertFalse(facade.createGame("game1"));
         gameList = facade.listGames();
-        Assertions.assertEquals(0, gameList.size());
+        Assertions.assertNull(gameList);
     }
 
     @Test
@@ -236,6 +237,7 @@ public class ServerFacadeTests {
         for (int i=0; i<20; i++) {
             String gameName = "game" + String.valueOf(i);
             gameNames.add(gameName);
+            facade.createGame(gameName);
         }
         List<GameData> gameList = Assertions.assertDoesNotThrow(() -> facade.listGames());
         Assertions.assertEquals(20, gameList.size());

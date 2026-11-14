@@ -5,6 +5,7 @@ import model.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,6 +24,7 @@ public class ServerFacade {
     static private final Gson serializer = new Gson();
     private final HttpClient client = HttpClient.newHttpClient();
     static private String serverMessage = null;
+    static private final String internalErrorMessage = "An unknown error occurred. Please try again or contact the developer.";
 
     private enum Method {
         GET,
@@ -74,7 +76,7 @@ public class ServerFacade {
                 return false;
             }
             else {
-                serverMessage = "Failed to log in. An unknown error occurred. Please contact the developer.";
+                serverMessage = "Failed to log in. " + internalErrorMessage;
                 return false;
             }
         }
@@ -102,7 +104,7 @@ public class ServerFacade {
                     serverMessage = "Hmmm, looks like you're not logged in";
                     return false;
                 } else {
-                    serverMessage = "Failed to log out. An unknown error occurred. Please contact the developer.";
+                    serverMessage = "Failed to log out. " + internalErrorMessage;
                     return false;
                 }
             } catch (IOException | InterruptedException e) {
@@ -126,7 +128,7 @@ public class ServerFacade {
                 return true;
             }
             else if (response.statusCode() == 400) {
-                serverMessage = "Failed to complete registration. Please make sure that you fill out all required values";
+                serverMessage = "Username, password, and email are all required.";
                 return false;
             }
             else if (response.statusCode() == 403) {
@@ -134,7 +136,7 @@ public class ServerFacade {
                 return false;
             }
             else {
-                serverMessage = "Failed to register. An unknown error occurred. Please try again or contact the developer.";
+                serverMessage = "Failed to register. " + internalErrorMessage;
                 return false;
             }
         }
@@ -160,6 +162,7 @@ public class ServerFacade {
                 var response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     serverMessage = "Successfully created new game '" + name + "'";
+                    System.out.println(response.body());
                     return true;
                 }
                 else if (response.statusCode() == 401) {
@@ -171,7 +174,7 @@ public class ServerFacade {
                     return false;
                 }
                 else {
-                    serverMessage = "Failed to create game. An unknown error occurred. Please try again or contact the developer.";
+                    serverMessage = "Failed to create game. " + internalErrorMessage;
                     return false;
                 }
             }
@@ -182,7 +185,36 @@ public class ServerFacade {
         }
     }
 
-    public List<GameData> listGames() { return(null); }
+    public List<GameData> listGames() {
+        if (currentAuth == null) {
+            serverMessage = "Hmmm, looks like you're not logged in";
+            return null;
+        }
+        else {
+            try {
+                var request = makeRequest("/game", Method.GET, true);
+                var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    var responseList = serializer.fromJson(response.body(), ListGameResult.class);
+                    System.out.println(responseList);
+                    serverMessage = "Fetched games";
+                    return new ArrayList<>(responseList.games());
+                }
+                else if (response.statusCode() == 401) {
+                    serverMessage = "Hmmm, looks like you're not logged in";
+                    return null;
+                }
+                else {
+                    serverMessage = "Failed to fetch games. " + internalErrorMessage;
+                    return null;
+                }
+            }
+            catch (IOException | InterruptedException e) {
+                serverMessage = "Unable to reach the server. Please check your network connection.";
+                return null;
+            }
+        }
+    }
 
     public String getCurrentUser() { return(currentUser);}
 
