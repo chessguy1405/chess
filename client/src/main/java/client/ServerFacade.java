@@ -23,6 +23,8 @@ public class ServerFacade {
     static private boolean viewing = false;
     static private boolean playing = false;
 
+    static private GameData currentGame = null;
+
     static private String serverHost;
     static private final Gson serializer = new Gson();
     private final HttpClient client = HttpClient.newHttpClient();
@@ -157,18 +159,12 @@ public class ServerFacade {
             return false;
         }
         try {
-            List<GameData> gameList = listGames();
-            int id = -1;
-            for (GameData game : gameList) {
-                if (game.gameName().equals(name)) {
-                    id = game.gameID();
-                    break;
-                }
-            }
-            if (id == -1) {
+            var game = getGameByName(name);
+            if (game == null) {
                 serverMessage = "Game does not exist";
                 return false;
             }
+            int id = game.gameID();
             var jsonMap = Map.of("gameID", id, "playerColor", color.toUpperCase(Locale.ROOT));
             var request = makeRequest("/game", Method.PUT, true, jsonMap);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -199,7 +195,34 @@ public class ServerFacade {
         }
     }
 
-    public GameData enterGame(String name) { return null; }
+    public boolean enterGame(String name) {
+        if (currentAuth == null) {
+            serverMessage = authErrorMessage;
+            return false;
+        }
+        var game = getGameByName(name);
+        if (game == null) {
+            serverMessage = "Game does not exist";
+            return false;
+        }
+        currentGame = game;
+        viewing = true;
+        playing = (game.whiteUsername().equals(currentUser) || game.blackUsername().equals(currentUser));
+        if (playing) {
+            serverMessage = "Now playing in " + name;
+        }
+        else {
+            serverMessage = "Now observing " + name;
+        }
+        return true;
+    }
+
+    public void exitGame() {
+        currentGame = null;
+        viewing = false;
+        playing = false;
+        serverMessage = "Exited game.";
+    }
 
     public boolean createGame(String name) {
         if (currentAuth == null) {
@@ -370,4 +393,18 @@ public class ServerFacade {
     }
 
     public String getServerMessage() { return(serverMessage); }
+
+    public GameData getCurrentGame() { return(currentGame); }
+
+    private GameData getGameByName(String name) {
+        List<GameData> gameList = listGames();
+        GameData foundGame = null;
+        for (GameData game : gameList) {
+            if (game.gameName().equals(name)) {
+                foundGame = game;
+                break;
+            }
+        }
+        return foundGame;
+    }
 }
