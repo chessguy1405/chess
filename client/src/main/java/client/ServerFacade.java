@@ -148,13 +148,45 @@ public class ServerFacade {
 
     public GameData enterGame(String name) { return null; }
 
-    public boolean createGame(String name) { return false; }
+    public boolean createGame(String name) {
+        if (currentAuth == null) {
+            serverMessage = "Hmmm, looks like you're not logged in";
+            return false;
+        }
+        else {
+            try {
+                var newGameMap = Map.of("gameName", name);
+                var request = makeRequest("/game", Method.POST, true, newGameMap);
+                var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    serverMessage = "Successfully created new game '" + name + "'";
+                    return true;
+                }
+                else if (response.statusCode() == 401) {
+                    serverMessage = "Hmmm, looks like you're not logged in";
+                    return false;
+                }
+                else if (response.statusCode() == 400) {
+                    serverMessage = "Game name is required";
+                    return false;
+                }
+                else {
+                    serverMessage = "Failed to create game. An unknown error occurred. Please try again or contact the developer.";
+                    return false;
+                }
+            }
+            catch (IOException | InterruptedException e) {
+                serverMessage = "Unable to reach the server. Please check your network connection.";
+                return false;
+            }
+        }
+    }
+
+    public List<GameData> listGames() { return(null); }
 
     public String getCurrentUser() { return(currentUser);}
 
     public boolean isLoggedIn() { return(currentAuth != null); }
-
-    public List<GameData> listGames() { return(null); }
 
     public boolean isViewing() { return(viewing); }
 
