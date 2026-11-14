@@ -52,7 +52,6 @@ public class Server {
     private final String unauthorizedJson = serializer.toJson(Map.of("message", "Error: Unauthorized"));
     private final String serverErrorJson = serializer.toJson(Map.of("message", "Error: Internal Server Error"));
     private final String badRequestJson = serializer.toJson(Map.of("message", "Error: bad request"));
-    private final String notImplementedJson = serializer.toJson(Map.of("message", "Not Implemented"));
     private final String emptyJson = serializer.toJson(Map.of());
     private final String noAuthJson = serializer.toJson(Map.of("message", "Error: No authToken"));
 
