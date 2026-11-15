@@ -1,8 +1,11 @@
 package client;
 
 import chess.*;
+import model.GameData;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ClientMain {
@@ -29,54 +32,9 @@ public class ClientMain {
                 }
 
                 String input = scanner.nextLine().trim();
-
                 input = normalizeCommand(input, facade);
 
-                switch(getMenuState(facade)) {
-                    case LOGGED_OUT:
-                        switch (input.toLowerCase(Locale.ROOT)) {
-                            case "quit":
-                                running = false;
-                                break;
-                            case "login":
-                                login(scanner, facade);
-                                break;
-                            case "register":
-                                register(scanner, facade);
-                                break;
-                            default:
-                                if (!input.isBlank()) {
-                                    System.out.println("Unknown command " + input);
-                                }
-                                break;
-                        }
-                        break;
-                    case LOBBY:
-                        switch (input.toLowerCase(Locale.ROOT)) {
-                            case "quit":
-                                running = false;
-                                break;
-                            case "logout":
-                                facade.logoutUser();
-                                break;
-                            default:
-                                if (!input.isBlank()) {
-                                    System.out.println("Unknown command " + input);
-                                }
-                                break;
-                        }
-                        break;
-                    case IN_GAME:
-                        switch (input.toLowerCase(Locale.ROOT)) {
-                            default:
-                                if (!input.isBlank()) {
-                                    System.out.println("Unknown command " + input);
-                                }
-                                break;
-                        }
-                        break;
-                    default: System.out.println("Corrupted state. Please relaunch the application.");
-                }
+                running = runCommand(scanner, facade, input);
             }
         }
     }
@@ -178,11 +136,106 @@ public class ClientMain {
         if (password == null) return;
 
         String confirmPassword = getParam(scanner, "Please confirm your password");
-        if (!password.equals(confirmPassword)) return;
+        if (!password.equals(confirmPassword)) {
+            System.out.println("Passwords must match");
+            return;
+        }
 
         String email = getParam(scanner, "Please enter your email");
         if (email == null) return;
 
         facade.registerUser(username, password, email);
+    }
+
+    private static boolean runCommand(Scanner scanner, ServerFacade facade, String input) {
+        switch(getMenuState(facade)) {
+            case LOGGED_OUT:
+                return runLoggedOutCommand(scanner, facade, input);
+            case LOBBY:
+                return runLobbyCommand(scanner, facade, input);
+            case IN_GAME:
+                return runInGameCommand(scanner, facade, input);
+            default:
+                System.out.println("Corrupted state. Please relaunch the application.");
+                return false;
+        }
+    }
+
+    private static boolean runLoggedOutCommand(Scanner scanner, ServerFacade facade, String input) {
+        return switch (input.toLowerCase(Locale.ROOT)) {
+            case "quit": yield false;
+            case "login":
+                login(scanner, facade);
+                yield true;
+            case "register":
+                register(scanner, facade);
+                yield true;
+            default:
+                if (!input.isBlank()) {
+                    System.out.println("Unknown command " + input);
+                }
+                yield true;
+        };
+    }
+
+    static private boolean runLobbyCommand(Scanner scanner, ServerFacade facade, String input) {
+        return switch (input.toLowerCase(Locale.ROOT)) {
+            case "quit":
+                yield false;
+            case "logout":
+                facade.logoutUser();
+                yield true;
+            case "enter":
+                enter(scanner, facade);
+                yield true;
+            case "join":
+                join(scanner, facade);
+                yield true;
+            case "create":
+                create(scanner, facade);
+                yield true;
+            default:
+                if (!input.isBlank()) {
+                    System.out.println("Unknown command " + input);
+                }
+                yield true;
+        };
+    }
+
+    static private boolean runInGameCommand(Scanner scanner, ServerFacade facade, String input) {
+        return switch (input.toLowerCase(Locale.ROOT)) {
+            default:
+                if (!input.isBlank()) {
+                    System.out.println("Unknown command " + input);
+                }
+                yield true;
+        };
+    }
+
+    static private void enter(Scanner scanner, ServerFacade facade) {
+        var gameList = facade.listGames();
+        Map<String, String> localIdList = new HashMap<>();
+        int counter = 1;
+        for (GameData game : gameList) {
+            if (!game.game().isOver()) {
+                localIdList.put(String.valueOf(counter), game.gameName());
+                System.out.println("(" + counter++ + ") (" + game.gameName() + ")");
+            }
+        }
+        String gameName = getParam(scanner, "Choose a game");
+        if (gameName == null) return;
+        if (gameName.matches("[0-9]*")) {
+            if (Integer.parseInt(gameName) >= counter) {
+                System.out.println("Hmmm, that game doesn't seem to exist");
+                return;
+            }
+            gameName = localIdList.get(gameName);
+        }
+        facade.enterGame(gameName);
+    }
+
+    static private void create(Scanner scanner, ServerFacade facade) {
+        String gameName = getParam(scanner, "Choose a name for your game");
+        facade.createGame(gameName);
     }
 }

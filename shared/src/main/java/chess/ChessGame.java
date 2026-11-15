@@ -248,4 +248,12 @@ public class ChessGame {
     public String toString() {
         return String.format("Turn: %s%nBoard State:%n%s", this.teamTurn, this.board);
     }
+
+    public boolean isWon() {
+        return (isInCheckmate(TeamColor.WHITE) || isInCheckmate(TeamColor.BLACK));
+    }
+
+    public boolean isOver() {
+        return (isWon() || isInStalemate(TeamColor.WHITE) || isInStalemate(TeamColor.BLACK));
+    }
 }
