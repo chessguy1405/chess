@@ -204,6 +204,11 @@ public class ClientMain {
 
     static private boolean runInGameCommand(Scanner scanner, ServerFacade facade, String input) {
         return switch (input.toLowerCase(Locale.ROOT)) {
+            case "quit":
+                yield false;
+            case "exit":
+                exit(scanner, facade);
+                yield true;
             default:
                 if (!input.isBlank()) {
                     System.out.println("Unknown command " + input);
@@ -224,7 +229,7 @@ public class ClientMain {
         }
         String gameName = getParam(scanner, "Choose a game");
         if (gameName == null) return;
-        if (gameName.matches("[0-9]*")) {
+        if (gameName.matches("\\d+")) {
             if (Integer.parseInt(gameName) >= counter) {
                 System.out.println("Hmmm, that game doesn't seem to exist");
                 return;
@@ -237,5 +242,47 @@ public class ClientMain {
     static private void create(Scanner scanner, ServerFacade facade) {
         String gameName = getParam(scanner, "Choose a name for your game");
         facade.createGame(gameName);
+    }
+
+    static private void join(Scanner scanner, ServerFacade facade) {
+        var gameList = facade.listGames();
+        if (gameList == null) return;
+
+        Map<String, String> localIdList = new HashMap<>();
+        int counter = 1;
+
+        for (GameData game : gameList) {
+            boolean hasOpenSeat = game.whiteUsername() == null || game.blackUsername() == null;
+
+            if (!game.game().isOver() && hasOpenSeat) {
+                localIdList.put(String.valueOf(counter), game.gameName());
+                System.out.println("(" + counter++ + ") (" + game.gameName() + ")");
+            }
+        }
+
+        if (localIdList.isEmpty()) {
+            System.out.println("There are no active games with an open seat.");
+        }
+
+        String selection = getParam(scanner, "Choose a game");
+        if (selection == null) return;
+
+        String gameName = localIdList.get(selection);
+        if (gameName == null) {
+            if (selection.matches("\\d+")) {
+                System.out.println("That game number doesn't exist");
+                return;
+            }
+            gameName = selection;
+        }
+
+        String color = getParam(scanner, "Please enter your color (white or black)");
+        if (color == null) return;
+
+        facade.joinGame(gameName, color);
+    }
+
+    static private void exit(Scanner scanner, ServerFacade facade) {
+        facade.exitGame();
     }
 }
