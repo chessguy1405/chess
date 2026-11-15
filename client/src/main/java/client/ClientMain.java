@@ -219,6 +219,7 @@ public class ClientMain {
 
     static private void enter(Scanner scanner, ServerFacade facade) {
         var gameList = facade.listGames();
+        if (gameList == null) return;
         Map<String, String> localIdList = new HashMap<>();
         int counter = 1;
         for (GameData game : gameList) {
@@ -227,10 +228,14 @@ public class ClientMain {
                 System.out.println("(" + counter++ + ") (" + game.gameName() + ")");
             }
         }
+        if (localIdList.isEmpty()) {
+            System.out.println("No games are currently active");
+            return;
+        }
         String gameName = getParam(scanner, "Choose a game");
         if (gameName == null) return;
         if (gameName.matches("\\d+")) {
-            if (Integer.parseInt(gameName) >= counter) {
+            if (Integer.parseInt(gameName) >= counter || gameName.equals("0")) {
                 System.out.println("Hmmm, that game doesn't seem to exist");
                 return;
             }
@@ -241,6 +246,7 @@ public class ClientMain {
 
     static private void create(Scanner scanner, ServerFacade facade) {
         String gameName = getParam(scanner, "Choose a name for your game");
+        if (gameName == null) return;
         facade.createGame(gameName);
     }
 
