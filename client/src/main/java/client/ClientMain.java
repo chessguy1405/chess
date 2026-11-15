@@ -1,6 +1,8 @@
 package client;
 
 import chess.*;
+
+import java.util.Locale;
 import java.util.Scanner;
 
 public class ClientMain {
@@ -30,11 +32,50 @@ public class ClientMain {
 
                 input = normalizeCommand(input, facade);
 
-                if (input.equalsIgnoreCase("quit")) {
-                    running = false;
-                }
-                else if (!input.isEmpty()) {
-                    System.out.println("Unknown command " + input);
+                switch(getMenuState(facade)) {
+                    case LOGGED_OUT:
+                        switch (input.toLowerCase(Locale.ROOT)) {
+                            case "quit":
+                                running = false;
+                                break;
+                            case "login":
+                                login(scanner, facade);
+                                break;
+                            case "register":
+                                register(scanner, facade);
+                                break;
+                            default:
+                                if (!input.isBlank()) {
+                                    System.out.println("Unknown command " + input);
+                                }
+                                break;
+                        }
+                        break;
+                    case LOBBY:
+                        switch (input.toLowerCase(Locale.ROOT)) {
+                            case "quit":
+                                running = false;
+                                break;
+                            case "logout":
+                                facade.logoutUser();
+                                break;
+                            default:
+                                if (!input.isBlank()) {
+                                    System.out.println("Unknown command " + input);
+                                }
+                                break;
+                        }
+                        break;
+                    case IN_GAME:
+                        switch (input.toLowerCase(Locale.ROOT)) {
+                            default:
+                                if (!input.isBlank()) {
+                                    System.out.println("Unknown command " + input);
+                                }
+                                break;
+                        }
+                        break;
+                    default: System.out.println("Corrupted state. Please relaunch the application.");
                 }
             }
         }
@@ -110,5 +151,38 @@ public class ClientMain {
                 }
             default: return input;
         }
+    }
+
+    private static String getParam(Scanner scanner, String message) {
+        System.out.println(message);
+        System.out.print(">>> ");
+        if (!scanner.hasNextLine()) return null;
+        return scanner.nextLine().trim();
+    }
+
+    private static void login(Scanner scanner, ServerFacade facade) {
+        String username = getParam(scanner, "Please enter your username");
+        if (username == null) return;
+
+        String password = getParam(scanner, "Please enter your password");
+        if (password == null) return;
+
+        facade.loginUser(username, password);
+    }
+
+    private static void register(Scanner scanner, ServerFacade facade) {
+        String username = getParam(scanner, "Please enter your username");
+        if (username == null) return;
+
+        String password = getParam(scanner, "Please enter your password");
+        if (password == null) return;
+
+        String confirmPassword = getParam(scanner, "Please confirm your password");
+        if (!password.equals(confirmPassword)) return;
+
+        String email = getParam(scanner, "Please enter your email");
+        if (email == null) return;
+
+        facade.registerUser(username, password, email);
     }
 }
