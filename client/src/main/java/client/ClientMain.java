@@ -118,11 +118,18 @@ public class ClientMain {
         return scanner.nextLine().trim();
     }
 
+    private static String getPassword(Scanner scanner, String message) {
+        System.out.println(message);
+        System.out.print(">>> ");
+        if (!scanner.hasNextLine()) return null;
+        return scanner.nextLine();
+    }
+
     private static void login(Scanner scanner, ServerFacade facade) {
         String username = getParam(scanner, "Please enter your username");
         if (username == null) return;
 
-        String password = getParam(scanner, "Please enter your password");
+        String password = getPassword(scanner, "Please enter your password");
         if (password == null) return;
 
         facade.loginUser(username, password);
@@ -132,10 +139,10 @@ public class ClientMain {
         String username = getParam(scanner, "Please enter your username");
         if (username == null) return;
 
-        String password = getParam(scanner, "Please enter your password");
+        String password = getPassword(scanner, "Please enter your password");
         if (password == null) return;
 
-        String confirmPassword = getParam(scanner, "Please confirm your password");
+        String confirmPassword = getPassword(scanner, "Please confirm your password");
         if (!password.equals(confirmPassword)) {
             System.out.println("Passwords must match");
             return;
