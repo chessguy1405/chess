@@ -53,12 +53,12 @@ public class EscapeSequences {
     public static final String WHITE_KNIGHT = " ♘ ";
     public static final String WHITE_ROOK = " ♖ ";
     public static final String WHITE_PAWN = " ♙ ";
-    public static final String BLACK_KING = " ♚ ";
-    public static final String BLACK_QUEEN = " ♛ ";
-    public static final String BLACK_BISHOP = " ♝ ";
-    public static final String BLACK_KNIGHT = " ♞ ";
-    public static final String BLACK_ROOK = " ♜ ";
-    public static final String BLACK_PAWN = " ♟ ";
+    public static final String BLACK_KING = SET_TEXT_COLOR_BLACK + WHITE_KING + RESET_TEXT_COLOR;;
+    public static final String BLACK_QUEEN = SET_TEXT_COLOR_BLACK + WHITE_QUEEN + RESET_TEXT_COLOR;;
+    public static final String BLACK_BISHOP = SET_TEXT_COLOR_BLACK + WHITE_BISHOP + RESET_TEXT_COLOR;;
+    public static final String BLACK_KNIGHT = SET_TEXT_COLOR_BLACK + WHITE_KNIGHT + RESET_TEXT_COLOR;;
+    public static final String BLACK_ROOK = SET_TEXT_COLOR_BLACK + WHITE_ROOK + RESET_TEXT_COLOR;;
+    public static final String BLACK_PAWN = SET_TEXT_COLOR_BLACK + WHITE_PAWN + RESET_TEXT_COLOR;
     public static final String EMPTY = " \u2003 ";
 
     public static String moveCursorToLocation(int x, int y) { return UNICODE_ESCAPE + "[" + y + ";" + x + "H"; }

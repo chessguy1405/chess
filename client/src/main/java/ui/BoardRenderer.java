@@ -17,7 +17,7 @@ public class BoardRenderer {
     private static void printLine(ChessBoard board, boolean whiteView, int rank) {
         for (int colOffset = 0; colOffset < 8; colOffset++) {
             int file = whiteView ? colOffset + 1 : 8 - colOffset;
-            boolean darkSquare = (rank + file) % 2 == 1;
+            boolean darkSquare = (rank + file) % 2 == 0;
 
             String background = darkSquare ? EscapeSequences.SET_BG_COLOR_DARK_GREY : EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
             ChessPiece piece = board.getPiece(new ChessPosition(rank, file));
