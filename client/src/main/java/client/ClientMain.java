@@ -256,6 +256,7 @@ public class ClientMain {
     static private void create(Scanner scanner, ServerFacade facade) {
         String gameName = getParam(scanner, "Choose a name for your game");
         if (gameName == null) return;
+        if (gameName.matches("\\d+")) gameName = "game" + gameName;
         facade.createGame(gameName);
     }
 

@@ -202,10 +202,7 @@ public class ServerFacade {
             return false;
         }
         var game = getGameByName(name);
-        if (game == null) {
-            serverMessage = "Game does not exist";
-            return false;
-        }
+        if (game == null) return false;
         currentGame = game;
         viewing = true;
         playing = (currentUser.equals(game.whiteUsername()) || currentUser.equals(game.blackUsername()));
@@ -406,6 +403,9 @@ public class ServerFacade {
                 foundGame = game;
                 break;
             }
+        }
+        if (foundGame == null) {
+            serverMessage = "Game does not exist";
         }
         return foundGame;
     }
