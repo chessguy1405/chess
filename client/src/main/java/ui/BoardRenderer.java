@@ -10,20 +10,21 @@ public class BoardRenderer {
 
         for (int rowOffset = 0; rowOffset < 8; rowOffset++) {
             int rank = whiteView ? 8 - rowOffset : rowOffset + 1;
-            for (int squareLine = 0; squareLine < 3; squareLine++) {
-                printLine(board, whiteView, rank, squareLine);
-            }
+            printLine(board, whiteView, rank);
         }
     }
 
-    private static void printLine(ChessBoard board, boolean whiteView, int rank, int squareLine) {
+    private static void printLine(ChessBoard board, boolean whiteView, int rank) {
         for (int colOffset = 0; colOffset < 8; colOffset++) {
             int file = whiteView ? colOffset + 1 : 8 - colOffset;
             boolean darkSquare = (rank + file) % 2 == 1;
 
             String background = darkSquare ? EscapeSequences.SET_BG_COLOR_DARK_GREY : EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
             ChessPiece piece = board.getPiece(new ChessPosition(rank, file));
-            String content = squareLine == 1 ? pieceSymbol(piece) : EscapeSequences.EMPTY;
+
+            String textColor = darkSquare ? EscapeSequences.SET_TEXT_COLOR_DARK_GREY : EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+            String invisiblePiece = textColor + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR;
+            String content = piece != null ? pieceSymbol(piece) : invisiblePiece;
 
             System.out.print(background + content + EscapeSequences.RESET_BG_COLOR);
         }

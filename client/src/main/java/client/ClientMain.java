@@ -2,6 +2,7 @@ package client;
 
 import chess.*;
 import model.GameData;
+import ui.*;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -50,6 +51,18 @@ public class ClientMain {
     }
 
     private static void printState(ServerFacade facade) {
+
+        if (facade.isViewing()) {
+            GameData currentGame = facade.getCurrentGame();
+            ChessGame.TeamColor view = ChessGame.TeamColor.WHITE;
+
+            if (facade.isPlaying() && facade.getCurrentUser().equals(currentGame.blackUsername())) {
+                view = ChessGame.TeamColor.BLACK;
+            }
+
+            BoardRenderer.printBoard(currentGame.game(), view);
+        }
+
         String message = facade.getServerMessage();
         if (message != null && !message.isBlank()) {
             System.out.println(message);
