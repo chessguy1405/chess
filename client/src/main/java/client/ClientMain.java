@@ -232,14 +232,16 @@ public class ClientMain {
             System.out.println("No games are currently active");
             return;
         }
-        String gameName = getParam(scanner, "Choose a game");
-        if (gameName == null) return;
-        if (gameName.matches("\\d+")) {
-            if (Integer.parseInt(gameName) >= counter || gameName.equals("0")) {
+        String selection = getParam(scanner, "Choose a game");
+        if (selection == null) return;
+
+        String gameName = localIdList.get(selection);
+        if (gameName == null) {
+            if (selection.matches("\\d+")) {
                 System.out.println("Hmmm, that game doesn't seem to exist");
                 return;
             }
-            gameName = localIdList.get(gameName);
+            gameName = selection;
         }
         facade.enterGame(gameName);
     }

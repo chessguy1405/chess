@@ -208,7 +208,7 @@ public class ServerFacade {
         }
         currentGame = game;
         viewing = true;
-        playing = (game.whiteUsername().equals(currentUser) || game.blackUsername().equals(currentUser));
+        playing = (currentUser.equals(game.whiteUsername()) || currentUser.equals(game.blackUsername()));
         if (playing) {
             serverMessage = "Now playing in " + name;
         }
@@ -399,6 +399,7 @@ public class ServerFacade {
 
     private GameData getGameByName(String name) {
         List<GameData> gameList = listGames();
+        if (gameList == null) return null;
         GameData foundGame = null;
         for (GameData game : gameList) {
             if (game.gameName().equals(name)) {
