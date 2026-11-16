@@ -103,10 +103,10 @@ public class ServerFacade {
                 HttpRequest request = makeRequest("/session", Method.DELETE, true);
                 var response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    serverMessage = "Successfully logged out!";
                     currentUser = null;
                     currentAuth = null;
                     exitGame();
+                    serverMessage = "Successfully logged out!";
                     return true;
                 } else if (response.statusCode() == 401) {
                     serverMessage = authErrorMessage;
@@ -161,10 +161,7 @@ public class ServerFacade {
         }
         try {
             var game = getGameByName(name);
-            if (game == null) {
-                serverMessage = "Game does not exist";
-                return false;
-            }
+            if (game == null) return false;
             int id = game.gameID();
             var jsonMap = Map.of("gameID", id, "playerColor", color.toUpperCase(Locale.ROOT));
             var request = makeRequest("/game", Method.PUT, true, jsonMap);
