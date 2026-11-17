@@ -13,7 +13,7 @@ public class GameDataSQLTests {
     UserDataAccess userAccess = new UserDataAccessSQL();
     UserData testUser1 = new UserData("testuser1", "testpassword", "user1@example.com");
     UserData testUser2 = new UserData("testuser2", "testpassword", "user2@example.com");
-    int gameId = gameAccess.nextId();
+    int gameId = Assertions.assertDoesNotThrow(() -> gameAccess.nextId());
     ChessGame game = new ChessGame();
     GameData testGame = new GameData(gameId, null, null, "testgame1", game);
     GameData whiteGame = new GameData(gameId, "testuser1", null, "testgame1", game);
@@ -90,7 +90,7 @@ public class GameDataSQLTests {
 
     @Test
     public void nextIDTest() {
-        var exampleId = gameAccess.nextId();
+        var exampleId = Assertions.assertDoesNotThrow(() -> gameAccess.nextId());
         Assertions.assertInstanceOf(Integer.class, exampleId);
     }
 

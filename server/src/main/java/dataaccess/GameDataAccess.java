@@ -9,6 +9,6 @@ public interface GameDataAccess {
     void newGame(GameData gameData) throws DataAccessException;
     Collection<GameData> getGames() throws DataAccessException;
     GameData getGame(int id) throws DataAccessException;
-    int nextId();
+    int nextId() throws DataAccessException;
     void joinGame(ChessGame.TeamColor color, String username, int gameId) throws DataAccessException;
 }

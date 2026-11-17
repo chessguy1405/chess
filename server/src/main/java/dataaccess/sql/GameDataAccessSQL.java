@@ -77,7 +77,18 @@ public class GameDataAccessSQL implements GameDataAccess {
         }
     }
 
-    public int nextId() {return gameId;}
+    public int nextId() throws DataAccessException {
+        String sql = "SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM game";
+
+        try (var conn = DatabaseManager.getConnection();
+             var statement = conn.prepareStatement(sql);
+             var result = statement.executeQuery()) {
+            result.next();
+            return result.getInt("next_id");
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to get the next game ID", e);
+        }
+    }
 
     public void joinGame(@NotNull ChessGame.TeamColor color, String username, int gameId) throws DataAccessException {
         String update_sql;
