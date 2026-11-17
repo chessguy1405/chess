@@ -161,7 +161,7 @@ public class ServerFacade {
         }
         try {
             var game = getGameByName(name);
-            if (game == null) return false;
+            if (game == null) { return false; }
             int id = game.gameID();
             var jsonMap = Map.of("gameID", id, "playerColor", color.toUpperCase(Locale.ROOT));
             var request = makeRequest("/game", Method.PUT, true, jsonMap);
@@ -199,7 +199,7 @@ public class ServerFacade {
             return false;
         }
         var game = getGameByName(name);
-        if (game == null) return false;
+        if (game == null) { return false; }
         currentGame = game;
         viewing = true;
         playing = (currentUser.equals(game.whiteUsername()) || currentUser.equals(game.blackUsername()));
@@ -393,7 +393,7 @@ public class ServerFacade {
 
     private GameData getGameByName(String name) {
         List<GameData> gameList = listGames();
-        if (gameList == null) return null;
+        if (gameList == null) { return null; }
         GameData foundGame = null;
         for (GameData game : gameList) {
             if (game.gameName().equals(name)) {

@@ -48,7 +48,7 @@ public class BoardRenderer {
     }
 
     private static String pieceSymbol(ChessPiece piece) {
-        if (piece == null) return EscapeSequences.EMPTY;
+        if (piece == null) { return EscapeSequences.EMPTY; }
 
         return switch(piece.getTeamColor()) {
             case BLACK -> blackPieceSymbol(piece);
@@ -57,7 +57,7 @@ public class BoardRenderer {
     }
 
     private static String blackPieceSymbol(ChessPiece piece) {
-        if (piece == null) return EscapeSequences.EMPTY;
+        if (piece == null) { return EscapeSequences.EMPTY; }
 
         return switch(piece.getPieceType()) {
             case PAWN -> EscapeSequences.BLACK_PAWN;
@@ -70,7 +70,7 @@ public class BoardRenderer {
     }
 
     private static String whitePieceSymbol(ChessPiece piece) {
-        if (piece == null) return EscapeSequences.EMPTY;
+        if (piece == null) { return EscapeSequences.EMPTY; }
 
         return switch(piece.getPieceType()) {
             case PAWN -> EscapeSequences.WHITE_PAWN;
