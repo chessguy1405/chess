@@ -26,7 +26,9 @@ public class ClientMain {
             boolean running = true;
 
             while (running) {
-                System.out.println();
+
+                System.out.print(EscapeSequences.ERASE_SCREEN);
+                System.out.flush();
                 printState(facade);
                 if (!scanner.hasNextLine()) {
                     break;
