@@ -26,12 +26,12 @@ public class ServerFacade {
     static private GameData currentGame = null;
 
     static private String serverHost;
-    static private final Gson serializer = new Gson();
+    static private Gson serializer = new Gson();
     private final HttpClient client = HttpClient.newHttpClient();
 
-    static private final String internalErrorMessage = "An unknown error occurred. Please try again or contact the developer.";
-    static private final String netErrorMessage = "Unable to reach the server. Please check your network connection.";
-    static private final String authErrorMessage = "Hmmm, looks like you're not logged in";
+    static private String internalErrorMessage = "An unknown error occurred. Please try again or contact the developer.";
+    static private String netErrorMessage = "Unable to reach the server. Please check your network connection.";
+    static private String authErrorMessage = "Hmmm, looks like you're not logged in";
 
     private enum Method {
         GET,

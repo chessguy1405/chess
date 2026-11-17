@@ -95,65 +95,64 @@ public class ClientMain {
     }
 
     private static String normalizeCommand(String input, ServerFacade facade) {
-        if (!input.matches("[1-5]")) return input;
+        if (!input.matches("[1-5]")) { return input; }
 
-        switch (getMenuState(facade)) {
+        return switch (getMenuState(facade)) {
             case LOGGED_OUT:
-                switch (input) {
-                    case "1": return "login";
-                    case "2": return "register";
-                    case "3": return "quit";
-                    default: return input;
-                }
+                yield switch (input) {
+                    case "1" -> "login";
+                    case "2" -> "register";
+                    case "3" -> "quit";
+                    default -> input;
+                };
             case LOBBY:
-                switch (input) {
-                    case "1": return "create";
-                    case "2": return "join";
-                    case "3": return "enter";
-                    case "4": return "logout";
-                    case "5": return "quit";
-                    default: return input;
-                }
+                yield switch (input) {
+                    case "1" -> "create";
+                    case "2" -> "join";
+                    case "3" -> "enter";
+                    case "4" -> "logout";
+                    case "5" -> "quit";
+                    default -> input;
+                };
             case IN_GAME:
-                switch (input) {
-                    case "1": return "exit";
-                    case "2": return "quit";
-                    default: return input;
-                }
-            default: return input;
-        }
+                yield switch (input) {
+                    case "1" -> "exit";
+                    case "2" -> "quit";
+                    default -> input;
+                };
+        };
     }
 
     private static String getParam(Scanner scanner, String message) {
         System.out.println(message);
         System.out.print(">>> ");
-        if (!scanner.hasNextLine()) return null;
+        if (!scanner.hasNextLine()) { return null; }
         return scanner.nextLine().trim();
     }
 
     private static String getPassword(Scanner scanner, String message) {
         System.out.println(message);
         System.out.print(">>> ");
-        if (!scanner.hasNextLine()) return null;
+        if (!scanner.hasNextLine()) { return null; }
         return scanner.nextLine();
     }
 
     private static void login(Scanner scanner, ServerFacade facade) {
         String username = getParam(scanner, "Please enter your username");
-        if (username == null) return;
+        if (username == null) { return; }
 
         String password = getPassword(scanner, "Please enter your password");
-        if (password == null) return;
+        if (password == null) { return; }
 
         facade.loginUser(username, password);
     }
 
     private static void register(Scanner scanner, ServerFacade facade) {
         String username = getParam(scanner, "Please enter your username");
-        if (username == null) return;
+        if (username == null) { return; }
 
         String password = getPassword(scanner, "Please enter your password");
-        if (password == null) return;
+        if (password == null) { return; }
 
         String confirmPassword = getPassword(scanner, "Please confirm your password");
         if (!password.equals(confirmPassword)) {
@@ -162,23 +161,17 @@ public class ClientMain {
         }
 
         String email = getParam(scanner, "Please enter your email");
-        if (email == null) return;
+        if (email == null) { return; }
 
         facade.registerUser(username, password, email);
     }
 
     private static boolean runCommand(Scanner scanner, ServerFacade facade, String input) {
-        switch(getMenuState(facade)) {
-            case LOGGED_OUT:
-                return runLoggedOutCommand(scanner, facade, input);
-            case LOBBY:
-                return runLobbyCommand(scanner, facade, input);
-            case IN_GAME:
-                return runInGameCommand(scanner, facade, input);
-            default:
-                System.out.println("Corrupted state. Please relaunch the application.");
-                return false;
-        }
+        return switch(getMenuState(facade)) {
+            case LOGGED_OUT -> runLoggedOutCommand(scanner, facade, input);
+            case LOBBY -> runLobbyCommand(scanner, facade, input);
+            case IN_GAME -> runInGameCommand(scanner, facade, input);
+        };
     }
 
     private static boolean runLoggedOutCommand(Scanner scanner, ServerFacade facade, String input) {
@@ -239,7 +232,7 @@ public class ClientMain {
 
     static private void enter(Scanner scanner, ServerFacade facade) {
         var gameList = facade.listGames();
-        if (gameList == null) return;
+        if (gameList == null) { return; }
         Map<String, String> localIdList = new HashMap<>();
         int counter = 1;
         for (GameData game : gameList) {
@@ -253,7 +246,7 @@ public class ClientMain {
             return;
         }
         String selection = getParam(scanner, "Choose a game");
-        if (selection == null) return;
+        if (selection == null) { return; }
 
         String gameName = localIdList.get(selection);
         if (gameName == null) {
@@ -268,14 +261,14 @@ public class ClientMain {
 
     static private void create(Scanner scanner, ServerFacade facade) {
         String gameName = getParam(scanner, "Choose a name for your game");
-        if (gameName == null) return;
+        if (gameName == null) { return; }
         if (gameName.matches("\\d+")) gameName = "game" + gameName;
         facade.createGame(gameName);
     }
 
     static private void join(Scanner scanner, ServerFacade facade) {
         var gameList = facade.listGames();
-        if (gameList == null) return;
+        if (gameList == null) { return; }
 
         Map<String, String> localIdList = new HashMap<>();
         int counter = 1;
@@ -294,7 +287,7 @@ public class ClientMain {
         }
 
         String selection = getParam(scanner, "Choose a game");
-        if (selection == null) return;
+        if (selection == null) { return; }
 
         String gameName = localIdList.get(selection);
         if (gameName == null) {
@@ -306,7 +299,7 @@ public class ClientMain {
         }
 
         String color = getParam(scanner, "Please enter your color (white or black)");
-        if (color == null) return;
+        if (color == null) { return; }
 
         facade.joinGame(gameName, color);
     }
