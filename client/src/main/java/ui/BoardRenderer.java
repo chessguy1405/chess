@@ -8,13 +8,16 @@ public class BoardRenderer {
         ChessBoard board = game.getBoard();
         boolean whiteView = view == ChessGame.TeamColor.WHITE;
 
+        printFiles(whiteView);
         for (int rowOffset = 0; rowOffset < 8; rowOffset++) {
             int rank = whiteView ? 8 - rowOffset : rowOffset + 1;
             printLine(board, whiteView, rank);
         }
+        printFiles(whiteView);
     }
 
     private static void printLine(ChessBoard board, boolean whiteView, int rank) {
+        System.out.print(EscapeSequences.SET_BG_COLOR_BLACK + " " + rank + " " + EscapeSequences.RESET_BG_COLOR);
         for (int colOffset = 0; colOffset < 8; colOffset++) {
             int file = whiteView ? colOffset + 1 : 8 - colOffset;
             boolean darkSquare = (rank + file) % 2 == 0;
@@ -28,7 +31,19 @@ public class BoardRenderer {
 
             System.out.print(background + content + EscapeSequences.RESET_BG_COLOR);
         }
+        System.out.print(EscapeSequences.SET_BG_COLOR_BLACK + " " + rank + " " + EscapeSequences.RESET_BG_COLOR);
 
+        System.out.println();
+    }
+
+    private static void printFiles(boolean whiteView) {
+        System.out.print(EscapeSequences.SET_BG_COLOR_BLACK + "   "); // Spacing in the left corner
+        for (int colOffset = 0; colOffset < 8; colOffset++) {
+            char file = whiteView ? (char) ('a' + colOffset) : (char) ('h' - colOffset);
+            System.out.print(" " + file + EscapeSequences.SPACER);
+        }
+        System.out.print("   ");
+        System.out.print(EscapeSequences.RESET_BG_COLOR);
         System.out.println();
     }
 
